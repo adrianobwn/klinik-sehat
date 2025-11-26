@@ -18,6 +18,8 @@ import {
   HelpCircle,
   Moon,
   Sun,
+  Menu,
+  X,
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
@@ -31,6 +33,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchUnreadCount();
@@ -95,10 +98,32 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar - Fixed */}
-      <aside className="w-56 bg-card border-r border-border flex flex-col fixed left-0 top-0 bottom-0 overflow-y-auto">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-card border border-border shadow-lg"
+      >
+        {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Responsive */}
+      <aside
+        className={`
+          w-64 bg-card border-r border-border flex flex-col fixed left-0 top-0 bottom-0 overflow-y-auto z-40 transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0 lg:w-56
+        `}
+      >
         <div className="p-3 border-b border-border">
-          <Link to="/">
+          <Link to="/" onClick={() => setSidebarOpen(false)}>
             <Logo size="sm" />
           </Link>
         </div>
@@ -108,6 +133,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={() => setSidebarOpen(false)}
               className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-accent transition-colors text-sm"
             >
               <item.icon className="w-4 h-4" />

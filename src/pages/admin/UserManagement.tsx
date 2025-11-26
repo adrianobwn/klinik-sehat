@@ -128,11 +128,11 @@ export default function UserManagement() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       ) : (
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold">Kelola User</h1>
-            <p className="text-muted-foreground">Ubah role dan hapus user</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Kelola User</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Ubah role dan hapus user</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent>
@@ -199,49 +199,58 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             {users.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Telepon</TableHead>
-                    <TableHead>Tgl Daftar</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.full_name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{getRoleBadge(user.role)}</TableCell>
-                      <TableCell>{user.phone || '-'}</TableCell>
-                      <TableCell>
-                        {new Date(user.created_at).toLocaleDateString('id-ID')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(user)}
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(user)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="overflow-x-auto -mx-6 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="whitespace-nowrap">Nama</TableHead>
+                        <TableHead className="whitespace-nowrap hidden sm:table-cell">Email</TableHead>
+                        <TableHead className="whitespace-nowrap">Role</TableHead>
+                        <TableHead className="whitespace-nowrap hidden md:table-cell">Telepon</TableHead>
+                        <TableHead className="whitespace-nowrap hidden lg:table-cell">Tgl Daftar</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">Aksi</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">
+                            <div>
+                              <div className="font-medium">{user.full_name}</div>
+                              <div className="text-xs text-muted-foreground sm:hidden">{user.email}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
+                          <TableCell>{getRoleBadge(user.role)}</TableCell>
+                          <TableCell className="hidden md:table-cell">{user.phone || '-'}</TableCell>
+                          <TableCell className="hidden lg:table-cell">
+                            {new Date(user.created_at).toLocaleDateString('id-ID')}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end space-x-1 sm:space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEdit(user)}
+                              >
+                                <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleDelete(user)}
+                              >
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
             ) : (
               <div className="text-center py-12">
                 <div className="mx-auto w-24 h-24 mb-4 rounded-full bg-muted flex items-center justify-center">

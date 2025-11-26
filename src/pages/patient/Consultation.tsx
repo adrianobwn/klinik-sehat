@@ -127,11 +127,11 @@ export default function Consultation() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 sm:space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold">Konsultasi Online</h1>
-            <p className="text-muted-foreground">Konsultasi dengan dokter secara online</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Konsultasi Online</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Konsultasi dengan dokter secara online</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -277,13 +277,13 @@ export default function Consultation() {
         </Card>
 
         <Dialog open={chatDialogOpen} onOpenChange={setChatDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle>
+          <DialogContent className="max-w-2xl h-[90vh] sm:h-[80vh] flex flex-col p-0 gap-0">
+            <DialogHeader className="p-4 sm:p-6 border-b">
+              <DialogTitle className="text-base sm:text-lg">
                 Chat dengan Dr. {selectedConsultation?.doctor_name}
               </DialogTitle>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto space-y-4 p-4 border rounded-lg bg-muted/20">
+            <div className="flex-1 overflow-y-auto space-y-4 p-4 bg-muted/20">
               {messages.length > 0 ? (
                 messages.map((msg) => (
                   <div
@@ -295,15 +295,15 @@ export default function Consultation() {
                     }`}
                   >
                     <div
-                      className={`max-w-[70%] p-3 rounded-lg ${
+                      className={`max-w-[85%] sm:max-w-[70%] p-2 sm:p-3 rounded-lg ${
                         msg.sender_name !== selectedConsultation?.doctor_name
                           ? 'bg-primary text-primary-foreground'
                           : 'bg-background border'
                       }`}
                     >
-                      <p className="text-sm font-semibold mb-1">{msg.sender_name}</p>
-                      <p className="text-sm">{msg.message}</p>
-                      <p className="text-xs opacity-70 mt-1">
+                      <p className="text-xs sm:text-sm font-semibold mb-1">{msg.sender_name}</p>
+                      <p className="text-xs sm:text-sm break-words">{msg.message}</p>
+                      <p className="text-[10px] sm:text-xs opacity-70 mt-1">
                         {new Date(msg.created_at).toLocaleTimeString('id-ID')}
                       </p>
                     </div>
@@ -313,15 +313,16 @@ export default function Consultation() {
                 <p className="text-center text-muted-foreground">Belum ada pesan</p>
               )}
             </div>
-            <div className="flex space-x-2 mt-4">
+            <div className="flex space-x-2 p-4 border-t">
               <Input
                 placeholder="Ketik pesan..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                className="text-sm"
               />
-              <Button onClick={handleSendMessage}>
-                <Send className="w-4 h-4" />
+              <Button onClick={handleSendMessage} size="sm">
+                <Send className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
           </DialogContent>

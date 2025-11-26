@@ -83,15 +83,15 @@ export default function TodayPatients() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-8">
         <div>
-          <h1 className="text-4xl font-bold">Pasien Hari Ini</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Pasien Hari Ini</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Daftar pasien yang terdaftar hari ini ({new Date().toLocaleDateString('id-ID')})
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Menunggu</CardTitle>
@@ -133,20 +133,20 @@ export default function TodayPatients() {
                 patients.map((patient) => (
                   <div
                     key={patient.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-accent/50 transition-colors gap-3"
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
+                    <div className="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
+                      <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex-shrink-0">
                         {getStatusIcon(patient.queue_status)}
                       </div>
-                      <div className="flex items-center space-x-6">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                      <div className="flex items-center space-x-3 sm:space-x-6">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-base sm:text-lg flex-shrink-0">
                           {patient.queue_number}
                         </div>
-                        <div>
-                          <p className="font-semibold text-lg">{patient.full_name}</p>
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                            <span>{patient.phone || '-'}</span>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm sm:text-base lg:text-lg truncate">{patient.full_name}</p>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-xs sm:text-sm text-muted-foreground">
+                            <span className="truncate">{patient.phone || '-'}</span>
                             {patient.date_of_birth && (
                               <span>
                                 {new Date().getFullYear() -
@@ -158,9 +158,9 @@ export default function TodayPatients() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right space-y-2">
+                    <div className="flex sm:flex-col items-center sm:items-end space-x-3 sm:space-x-0 space-y-0 sm:space-y-2 w-full sm:w-auto">
                       {getStatusBadge(patient.queue_status)}
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {patient.appointment_time}
                       </p>
                     </div>

@@ -69,10 +69,10 @@ export default function Consultations() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-8">
         <div>
-          <h1 className="text-4xl font-bold">Konsultasi Online</h1>
-          <p className="text-muted-foreground">Pesan dari pasien Anda</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Konsultasi Online</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Pesan dari pasien Anda</p>
         </div>
 
         <Card>

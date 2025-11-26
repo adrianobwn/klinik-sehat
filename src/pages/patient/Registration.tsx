@@ -109,10 +109,10 @@ export default function Registration() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-8">
         <div>
-          <h1 className="text-4xl font-bold">Pendaftaran Online</h1>
-          <p className="text-muted-foreground">Daftar untuk janji temu dengan dokter</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Pendaftaran Online</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Daftar untuk janji temu dengan dokter</p>
         </div>
 
         <Card>
@@ -157,7 +157,7 @@ export default function Registration() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : timeSlots.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                       {timeSlots.map((slot) => (
                         <button
                           key={slot.time}
@@ -165,15 +165,15 @@ export default function Registration() {
                           disabled={slot.isFull}
                           onClick={() => setAppointmentTime(slot.time)}
                           className={`
-                            p-4 border-2 rounded-lg transition-all
+                            p-3 sm:p-4 border-2 rounded-lg transition-all
                             ${getSlotColor(slot)}
                             ${appointmentTime === slot.time ? 'ring-2 ring-primary border-primary' : ''}
                           `}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-1">
-                              <Clock className="w-4 h-4" />
-                              <span className="font-semibold text-sm">{slot.displayTime}</span>
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="font-semibold text-xs sm:text-sm">{slot.displayTime}</span>
                             </div>
                             <Badge className={getSlotBadgeColor(slot)}>
                               {slot.availableSlots}
