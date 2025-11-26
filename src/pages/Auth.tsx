@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Lock, Mail, User, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
+import RegisterForm from "@/components/RegisterForm";
 
 const Auth = () => {
   const location = useLocation();
@@ -19,29 +20,30 @@ const Auth = () => {
   }, [location]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login, register } = useAuth();
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isLogin) {
-        await login(email, password);
-        navigate("/dashboard");
-      } else {
-        await register({
-          email,
-          password,
-          full_name: fullName,
-          role: 'pasien'
-        });
-        navigate("/dashboard");
-      }
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (error: any) {
+      // Error already handled in AuthContext
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (data: any) => {
+    setLoading(true);
+    try {
+      await register(data);
+      navigate("/dashboard");
     } catch (error: any) {
       // Error already handled in AuthContext
     } finally {
@@ -71,9 +73,9 @@ const Auth = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-md p-8"
+        className="relative z-10 w-full max-w-2xl p-4 md:p-8"
       >
-        <div className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-border p-8">
+        <div className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-border p-6 md:p-8">
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Logo size="lg" showText={false} />
@@ -92,93 +94,74 @@ const Auth = () => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleAuth} className="space-y-6">
-            {!isLogin && (
+          {isLogin ? (
+            <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-foreground">
-                  Nama Lengkap
+                <Label htmlFor="email" className="text-foreground">
+                  Email
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Masukkan nama lengkap"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="nama@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 bg-background/50 border-border focus:border-primary transition-all"
-                    required={!isLogin}
+                    required
                   />
                 </div>
               </div>
-            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
-                Email
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="nama@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-background/50 border-border focus:border-primary transition-all"
-                  required
-                />
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-foreground">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10 bg-background/50 border-border focus:border-primary transition-all"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">
-                Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 bg-background/50 border-border focus:border-primary transition-all"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-primary hover:shadow-glow-primary transition-all duration-300 text-lg py-6"
+              >
+                {loading ? "Memproses..." : "Masuk"}
+              </Button>
+            </form>
+          ) : (
+            <div className="max-h-[65vh] overflow-y-auto pr-1 -mr-1 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/30">
+              <RegisterForm onSubmit={handleRegister} loading={loading} />
             </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-primary hover:shadow-glow-primary transition-all duration-300 text-lg py-6"
-            >
-              {loading
-                ? "Memproses..."
-                : isLogin
-                ? "Masuk"
-                : "Daftar Sekarang"}
-            </Button>
-          </form>
+          )}
 
           {/* Toggle */}
           <div className="mt-6 text-center">
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
-                setFullName("");
                 setEmail("");
                 setPassword("");
               }}
