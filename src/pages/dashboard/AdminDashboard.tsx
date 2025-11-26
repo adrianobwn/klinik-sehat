@@ -2,11 +2,31 @@ import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/lib/api';
-import { Users, UserCog, Calendar, Clock } from 'lucide-react';
+import { Users, UserCog, Calendar, Clock, TrendingUp, Activity } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import logoImage from '@/assets/logo.png';
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 11) return 'Selamat Pagi';
+    if (hour < 15) return 'Selamat Siang';
+    if (hour < 18) return 'Selamat Sore';
+    return 'Selamat Malam';
+  };
+
+  const getCurrentDate = () => {
+    return new Date().toLocaleDateString('id-ID', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   useEffect(() => {
     loadStats();
@@ -36,56 +56,83 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold">Dashboard Admin</h1>
-          <p className="text-muted-foreground">Kelola seluruh sistem klinik</p>
+        {/* Welcome Section with Logo */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-primary p-8 text-white">
+          <div className="absolute right-8 top-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
+            <img src={logoImage} alt="Klinik Sehat Logo" className="h-32 w-32 object-contain" />
+          </div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold mb-2">{getGreeting()}, {user?.full_name}! 🎯</h1>
+            <p className="text-white/90 text-lg">Monitoring & Kelola Sistem Klinik Sehat</p>
+            <div className="mt-4 flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{getCurrentDate()}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                <span>Status Sistem: Normal</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pasien</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.stats?.totalPatients || 0}</div>
-            </CardContent>
-          </Card>
+        {/* System Overview Stats */}
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Ringkasan Sistem</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="border-l-4 border-l-primary">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Pasien</CardTitle>
+                <Users className="h-5 w-5 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-primary">{stats?.stats?.totalPatients || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Terdaftar di sistem</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Dokter</CardTitle>
-              <UserCog className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.stats?.totalDoctors || 0}</div>
-            </CardContent>
-          </Card>
+            <Card className="border-l-4 border-l-accent">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Dokter</CardTitle>
+                <UserCog className="h-5 w-5 text-accent" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-accent">{stats?.stats?.totalDoctors || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Dokter aktif</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Janji Hari Ini</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.stats?.todayAppointments || 0}</div>
-            </CardContent>
-          </Card>
+            <Card className="border-l-4 border-l-yellow-500">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Janji Hari Ini</CardTitle>
+                <Calendar className="h-5 w-5 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-yellow-600">{stats?.stats?.todayAppointments || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Jadwal hari ini</p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Antrian Menunggu</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.stats?.todayQueue || 0}</div>
-            </CardContent>
-          </Card>
+            <Card className="border-l-4 border-l-orange-500">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Antrian Menunggu</CardTitle>
+                <Clock className="h-5 w-5 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-orange-600">{stats?.stats?.todayQueue || 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">Perlu perhatian</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Pendaftaran Terbaru</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Aktivitas Terbaru - Pendaftaran
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

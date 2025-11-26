@@ -2,11 +2,31 @@ import { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/lib/api';
-import { Users, Calendar, Clock } from 'lucide-react';
+import { Users, Calendar, Clock, Stethoscope, Activity } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import logoImage from '@/assets/logo.png';
 
 export default function DoctorDashboard() {
+  const { user } = useAuth();
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 11) return 'Selamat Pagi';
+    if (hour < 15) return 'Selamat Siang';
+    if (hour < 18) return 'Selamat Sore';
+    return 'Selamat Malam';
+  };
+
+  const getCurrentDate = () => {
+    return new Date().toLocaleDateString('id-ID', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   useEffect(() => {
     loadTodayPatients();
@@ -40,46 +60,74 @@ export default function DoctorDashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold">Dashboard Dokter</h1>
-          <p className="text-muted-foreground">Kelola jadwal dan pasien Anda</p>
+        {/* Welcome Section with Logo */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-primary p-8 text-white">
+          <div className="absolute right-8 top-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
+            <img src={logoImage} alt="Klinik Sehat Logo" className="h-32 w-32 object-contain" />
+          </div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold mb-2">{getGreeting()}, Dr. {user?.full_name}! 👨‍⚕️</h1>
+            <p className="text-white/90 text-lg">Semangat melayani pasien hari ini</p>
+            <div className="mt-4 flex items-center gap-2 text-sm">
+              <Calendar className="w-4 h-4" />
+              <span>{getCurrentDate()}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="border-l-4 border-l-yellow-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Menunggu</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Menunggu</CardTitle>
+              <Clock className="h-5 w-5 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{waitingPatients.length}</div>
+              <div className="text-3xl font-bold text-yellow-600">{waitingPatients.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Pasien di antrian</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-accent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sedang Dilayani</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Sedang Dilayani</CardTitle>
+              <Activity className="h-5 w-5 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{inProgressPatients.length}</div>
+              <div className="text-3xl font-bold text-accent">{inProgressPatients.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Dalam pemeriksaan</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-green-500">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Selesai</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Selesai</CardTitle>
+              <Calendar className="h-5 w-5 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{completedPatients.length}</div>
+              <div className="text-3xl font-bold text-green-600">{completedPatients.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Pasien dilayani</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-primary">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Hari Ini</CardTitle>
+              <Users className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary">{patients.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">Semua pasien</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Pasien Hari Ini</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Stethoscope className="w-5 h-5 text-primary" />
+              Daftar Pasien Hari Ini
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

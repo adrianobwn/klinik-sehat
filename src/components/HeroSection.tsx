@@ -12,7 +12,7 @@ const HeroSection = () => {
     if (isAuthenticated) {
       navigate("/dashboard");
     } else {
-      navigate("/auth");
+      navigate("/auth", { state: { mode: 'register' } });
     }
   };
 

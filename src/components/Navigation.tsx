@@ -102,7 +102,7 @@ const Navigation = () => {
                 </Button>
                 <Button 
                   className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/auth", { state: { mode: 'register' } })}
                 >
                   Daftar Sekarang
                 </Button>
