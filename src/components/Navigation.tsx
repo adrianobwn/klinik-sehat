@@ -23,8 +23,8 @@ const Navigation = () => {
   const navItems = [
     { name: "Beranda", icon: Home, action: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
     { name: "Fitur", icon: LayoutDashboard, action: () => scrollToSection('features') },
-    { name: "Tentang", icon: FileText, action: () => scrollToSection('features') },
-    { name: "Kontak", icon: MessageSquare, action: () => scrollToSection('features') },
+    { name: "Tentang", icon: FileText, action: () => scrollToSection('about') },
+    { name: "Kontak", icon: MessageSquare, action: () => scrollToSection('contact') },
   ];
 
   return (

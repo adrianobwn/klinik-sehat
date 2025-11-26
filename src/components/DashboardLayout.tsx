@@ -70,8 +70,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-56 bg-card border-r border-border flex flex-col">
+      {/* Sidebar - Fixed */}
+      <aside className="w-56 bg-card border-r border-border flex flex-col fixed left-0 top-0 bottom-0 overflow-y-auto">
         <div className="p-3 border-b border-border">
           <Link to="/">
             <Logo size="sm" />
@@ -156,8 +156,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      {/* Main Content - Scrollable with left margin for fixed sidebar */}
+      <main className="flex-1 ml-56 overflow-y-auto">
         <div className="p-8">{children}</div>
       </main>
     </div>

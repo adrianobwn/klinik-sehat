@@ -15,7 +15,6 @@ import PatientDashboard from "./pages/dashboard/PatientDashboard";
 import QueueManagement from "./pages/admin/QueueManagement";
 import UserManagement from "./pages/admin/UserManagement";
 import PatientDatabase from "./pages/admin/PatientDatabase";
-import Notifications from "./pages/admin/Notifications";
 
 import Schedule from "./pages/doctor/Schedule";
 import MedicalRecords from "./pages/doctor/MedicalRecords";
@@ -25,6 +24,9 @@ import Registration from "./pages/patient/Registration";
 import Consultation from "./pages/patient/Consultation";
 import QueueStatus from "./pages/patient/QueueStatus";
 import History from "./pages/patient/History";
+
+import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 
 const DashboardRedirect = () => {
   const { user } = useAuth();
@@ -87,7 +89,7 @@ const App = () => (
       path="/dashboard/admin/notifications"
       element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <Notifications />
+          <PatientDatabase />
         </ProtectedRoute>
       }
     />
@@ -164,6 +166,24 @@ const App = () => (
       element={
         <ProtectedRoute allowedRoles={['pasien', 'admin']}>
           <History />
+        </ProtectedRoute>
+      }
+    />
+    
+    {/* Settings & Notifications - Shared across all roles */}
+    <Route
+      path="/dashboard/settings"
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'dokter', 'pasien']}>
+          <Settings />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/dashboard/notifications"
+      element={
+        <ProtectedRoute allowedRoles={['admin', 'dokter', 'pasien']}>
+          <Notifications />
         </ProtectedRoute>
       }
     />
