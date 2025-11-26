@@ -82,15 +82,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </nav>
 
         <div className="p-4 border-t border-border">
-          <div className="mb-4 px-4 py-2">
-            <p className="text-sm text-muted-foreground">Logged in as</p>
-            <p className="font-semibold">{user?.full_name}</p>
-            <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+          <div className="mb-4 px-4 py-3 bg-accent/5 rounded-lg border border-accent/20">
+            <p className="font-semibold text-foreground">{user?.full_name}</p>
+            <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
           </div>
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="w-full justify-start"
+            className="w-full justify-start hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-colors"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout

@@ -22,7 +22,6 @@ const Navigation = () => {
   
   const navItems = [
     { name: "Fitur", icon: LayoutDashboard, action: () => scrollToSection('features') },
-    { name: "Role", icon: Users, action: () => scrollToSection('features') },
   ];
 
   return (
@@ -71,16 +70,11 @@ const Navigation = () => {
           >
             {isAuthenticated && user ? (
               <>
-                <div className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-secondary/50 rounded-lg">
+                <div className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-accent/5 rounded-lg border border-accent/20">
                   <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                    <span className="text-sm font-bold">{user.full_name?.charAt(0) || 'U'}</span>
+                    <span className="text-sm font-bold text-white">{user.full_name?.charAt(0) || 'U'}</span>
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium">{user.full_name}</p>
-                    <Badge variant="outline" className="text-xs">
-                      {user.role === 'admin' ? 'Admin' : user.role === 'dokter' ? 'Dokter' : 'Pasien'}
-                    </Badge>
-                  </div>
+                  <p className="text-sm font-medium">{user.full_name}</p>
                 </div>
                 <Button 
                   variant="outline"

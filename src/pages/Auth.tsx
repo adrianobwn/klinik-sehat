@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User, ArrowLeft } from "lucide-react";
 import Logo from "@/components/Logo";
 
 const Auth = () => {
@@ -44,10 +44,20 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
+      {/* Back to Home Button */}
+      <Button
+        onClick={() => navigate("/")}
+        variant="ghost"
+        className="absolute top-6 left-6 z-20 hover:bg-accent/10 hover:text-accent"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Kembali ke Beranda
+      </Button>
+
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       <motion.div
@@ -64,7 +74,7 @@ const Auth = () => {
 
           {/* Title */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
               {isLogin ? "Selamat Datang" : "Daftar Akun"}
             </h1>
             <p className="text-muted-foreground">

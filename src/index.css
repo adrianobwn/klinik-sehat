@@ -8,46 +8,48 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Klinik Sehat - Light & Fresh Theme */
+    /* Klinik Sehat - Light & Fresh Theme - Matched to Logo */
     --background: 0 0% 100%;
-    --foreground: 160 10% 15%;
+    --foreground: 210 40% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 160 10% 15%;
+    --card-foreground: 210 40% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 10% 15%;
+    --popover-foreground: 210 40% 20%;
 
-    --primary: 160 84% 39%;
+    /* Primary - Logo Green (#8DC63F) */
+    --primary: 82 60% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 20% 96%;
-    --secondary-foreground: 160 10% 15%;
+    --secondary: 82 20% 96%;
+    --secondary-foreground: 210 40% 20%;
 
-    --muted: 160 20% 96%;
-    --muted-foreground: 160 8% 46%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 210 8% 46%;
 
-    --accent: 180 82% 45%;
+    /* Accent - Logo Blue (#00A3E0) */
+    --accent: 194 100% 44%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 20% 90%;
-    --input: 160 20% 90%;
-    --ring: 160 84% 39%;
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 82 60% 52%;
 
     --radius: 0.75rem;
     
-    /* Klinik Sehat Custom Colors */
-    --gradient-primary: linear-gradient(135deg, hsl(160, 84%, 39%), hsl(180, 82%, 45%));
-    --gradient-dark: linear-gradient(180deg, hsl(160, 20%, 98%), hsl(160, 25%, 96%));
-    --glow-primary: 0 8px 32px hsl(160 84% 39% / 0.2);
-    --glow-accent: 0 8px 32px hsl(180 82% 45% / 0.2);
-    --shadow-elevated: 0 12px 40px -8px hsl(160 50% 50% / 0.15);
+    /* Klinik Sehat Custom Colors - Logo Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(82, 60%, 52%), hsl(194, 100%, 44%));
+    --gradient-dark: linear-gradient(180deg, hsl(82, 20%, 98%), hsl(194, 25%, 96%));
+    --glow-primary: 0 8px 32px hsl(82 60% 52% / 0.3);
+    --glow-accent: 0 8px 32px hsl(194 100% 44% / 0.3);
+    --shadow-elevated: 0 12px 40px -8px hsl(82 50% 50% / 0.15);
     
-    /* Hero specific - Fresh gradient */
-    --hero-gradient: linear-gradient(135deg, hsl(160, 25%, 98%) 0%, hsl(160, 40%, 96%) 50%, hsl(180, 30%, 97%) 100%);
+    /* Hero specific - Fresh gradient matching logo */
+    --hero-gradient: linear-gradient(135deg, hsl(82, 25%, 98%) 0%, hsl(194, 40%, 96%) 50%, hsl(180, 30%, 97%) 100%);
     
     /* Animation - Smooth & Natural */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,34 +73,34 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark Mode for Klinik Sehat */
-    --background: 160 10% 8%;
-    --foreground: 160 5% 96%;
+    /* Dark Mode for Klinik Sehat - Matched to Logo */
+    --background: 210 20% 8%;
+    --foreground: 210 5% 96%;
 
-    --card: 160 10% 12%;
-    --card-foreground: 160 5% 96%;
+    --card: 210 20% 12%;
+    --card-foreground: 210 5% 96%;
 
-    --popover: 160 10% 10%;
-    --popover-foreground: 160 5% 96%;
+    --popover: 210 20% 10%;
+    --popover-foreground: 210 5% 96%;
 
-    --primary: 160 84% 45%;
+    --primary: 82 60% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 10% 20%;
-    --secondary-foreground: 160 5% 96%;
+    --secondary: 210 15% 20%;
+    --secondary-foreground: 210 5% 96%;
 
-    --muted: 160 10% 18%;
-    --muted-foreground: 160 8% 60%;
+    --muted: 210 15% 18%;
+    --muted-foreground: 210 8% 60%;
 
-    --accent: 180 82% 50%;
+    --accent: 194 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --border: 160 10% 25%;
-    --input: 160 10% 25%;
+    --border: 210 15% 25%;
+    --input: 210 15% 25%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(160, 84%, 45%), hsl(180, 82%, 50%));
-    --gradient-dark: linear-gradient(180deg, hsl(160, 10%, 8%), hsl(160, 10%, 12%));
-    --hero-gradient: linear-gradient(135deg, hsl(160, 10%, 8%) 0%, hsl(160, 15%, 12%) 50%, hsl(180, 10%, 15%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(82, 60%, 55%), hsl(194, 100%, 50%));
+    --gradient-dark: linear-gradient(180deg, hsl(210, 20%, 8%), hsl(210, 20%, 12%));
+    --hero-gradient: linear-gradient(135deg, hsl(210, 20%, 8%) 0%, hsl(210, 25%, 12%) 50%, hsl(194, 15%, 15%) 100%);
   }
 }
 
