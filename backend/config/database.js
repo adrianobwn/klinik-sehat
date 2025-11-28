@@ -27,15 +27,29 @@ if (mysqlUrl) {
   try {
     const url = new URL(mysqlUrl);
 
-    // Decode username and password (they might be URL-encoded)
-    // Fallback to environment variables if URL parsing fails to get credentials
-    const username = decodeURIComponent(url.username || '') || process.env.MYSQLUSER || process.env.DB_USER;
-    const password = decodeURIComponent(url.password || '') || process.env.MYSQLPASSWORD || process.env.DB_PASSWORD;
+    // Try to parse with URL object first
+    let username = decodeURIComponent(url.username || '');
+    let password = decodeURIComponent(url.password || '');
+
+    // If URL object failed to get credentials, try regex parsing
+    if (!username) {
+      console.log('⚠️ URL parsing returned empty username, trying regex...');
+      const match = mysqlUrl.match(/:\/\/([^:]+):([^@]+)@/);
+      if (match) {
+        username = match[1];
+        password = match[2];
+        console.log('✅ Regex parsing successful');
+      }
+    }
+
+    // Final fallback: use environment variables or default to 'root'
+    username = username || process.env.MYSQLUSER || process.env.DB_USER || 'root';
+    password = password || process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '';
 
     console.log('🔍 Parsed URL components:');
     console.log('  Protocol:', url.protocol);
     console.log('  Hostname:', url.hostname);
-    console.log('  Username:', username ? '***' : '(empty)');
+    console.log('  Username:', username); // Log actual username to verify
     console.log('  Password:', password ? '***' : '(empty)');
     console.log('  Database:', url.pathname.substring(1));
     console.log('  Port:', url.port || 3306);
