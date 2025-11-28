@@ -8,6 +8,14 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+// Debug logging for Railway deployment
+console.log('🔍 Environment variables check:');
+console.log('  MYSQL_URL:', process.env.MYSQL_URL ? 'SET' : 'NOT SET');
+console.log('  DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+console.log('  MYSQLHOST:', process.env.MYSQLHOST || 'NOT SET');
+console.log('  MYSQLDATABASE:', process.env.MYSQLDATABASE || 'NOT SET');
+console.log('  DB_HOST:', process.env.DB_HOST || 'NOT SET');
+
 // Parse MySQL URL if available (Railway format)
 let dbConfig;
 const mysqlUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
