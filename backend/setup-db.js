@@ -31,9 +31,27 @@ async function setupDatabase() {
       console.log('📋 Tables not found. Creating database schema...');
 
       const sqlPath = path.join(__dirname, 'migrations', 'create_tables_only.sql');
-      const sql = fs.readFileSync(sqlPath, 'utf8');
+      const sqlContent = fs.readFileSync(sqlPath, 'utf8');
 
-      await connection.query(sql);
+      // Split by semicolon and execute each statement
+      const statements = sqlContent
+        .split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0);
+
+      console.log(`🚀 Executing ${statements.length} SQL statements...`);
+
+      for (const statement of statements) {
+        try {
+          await connection.query(statement);
+        } catch (err) {
+          console.error('⚠️ Error executing statement:', statement.substring(0, 50) + '...');
+          console.error('   Error:', err.message);
+          // Continue with next statement or throw depending on severity
+          // For now we throw to stop on error
+          throw err;
+        }
+      }
 
       console.log('✅ Database tables created successfully!');
     } else {
