@@ -5,14 +5,14 @@ import { validatePhone, validateNIK, validateEmail, validatePassword } from '../
 
 export const register = async (req, res) => {
   try {
-    const { 
-      email, 
-      password, 
-      full_name, 
-      role = 'pasien', 
-      phone, 
-      address, 
-      date_of_birth, 
+    const {
+      email,
+      password,
+      full_name,
+      role = 'pasien',
+      phone,
+      address,
+      date_of_birth,
       gender,
       nik, // NIK untuk pasien
       specialization, // Spesialisasi untuk dokter
@@ -209,7 +209,11 @@ export const login = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error details:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
     res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
   }
 };
@@ -415,11 +419,11 @@ export const updateProfile = async (req, res) => {
       }
     }
 
-    res.json({ 
+    res.json({
       message: 'Profil Anda telah diperbarui',
-      user: updatedUser 
+      user: updatedUser
     });
-    
+
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
@@ -485,7 +489,7 @@ export const changePassword = async (req, res) => {
 
     // Verify old password
     const isValidPassword = await bcrypt.compare(oldPassword, currentPassword);
-    
+
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Password lama tidak sesuai' });
     }
@@ -604,7 +608,7 @@ export const markAllNotificationsAsRead = async (req, res) => {
       [userId]
     );
 
-    res.json({ 
+    res.json({
       message: 'Semua notifikasi telah ditandai dibaca',
       markedCount: result.affectedRows
     });
