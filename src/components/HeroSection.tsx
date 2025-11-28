@@ -47,9 +47,7 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10 pt-20 md:pt-0">
-        {/* Mobile Spacer to prevent navbar overlap */}
-        <div className="h-32 md:hidden"></div>
+      <div className="container mx-auto px-6 relative z-10 pt-32 md:pt-0">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <motion.div
