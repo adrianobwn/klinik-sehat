@@ -1,29 +1,20 @@
-import mysql from 'mysql2/promise';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+import pool from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-dotenv.config();
 
 async function setupDatabase() {
   let connection;
 
   try {
-    console.log('🚀 Starting Database Setup Script v2.0 (Sequential Execution)');
+    console.log('🚀 Starting Database Setup Script v2.1 (Sequential Execution with Pool)');
     console.log('🔍 Checking database setup...');
 
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST || '127.0.0.1',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'clinic_queue_db',
-      port: process.env.DB_PORT || 3306,
-      multipleStatements: true
-    });
+    // Get a connection from the pool
+    connection = await pool.getConnection();
 
     // Check if tables exist
     const [tables] = await connection.query("SHOW TABLES LIKE 'admin'");
@@ -48,8 +39,7 @@ async function setupDatabase() {
         } catch (err) {
           console.error('⚠️ Error executing statement:', statement.substring(0, 50) + '...');
           console.error('   Error:', err.message);
-          // Continue with next statement or throw depending on severity
-          // For now we throw to stop on error
+          // Throw to stop execution on error
           throw err;
         }
       }
@@ -64,8 +54,13 @@ async function setupDatabase() {
     // Don't exit - let app continue even if setup fails
   } finally {
     if (connection) {
-      await connection.end();
+      connection.release();
     }
+    // We don't end the pool because server.js needs it
+    // But since this is a separate process in "startCommand", we should end it?
+    // "startCommand": "node init-db.js && node server.js"
+    // Yes, we should end the pool so the script exits.
+    await pool.end();
   }
 }
 
