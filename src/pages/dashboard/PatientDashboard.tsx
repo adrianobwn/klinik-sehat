@@ -15,7 +15,7 @@ export default function PatientDashboard() {
   const [loading, setLoading] = useState(true);
 
   const getGreeting = () => {
-    const jakartaTime = new Date().toLocaleString('en-US', { 
+    const jakartaTime = new Date().toLocaleString('en-US', {
       timeZone: 'Asia/Jakarta',
       hour12: false,
       hour: 'numeric'
@@ -34,7 +34,7 @@ export default function PatientDashboard() {
   const loadAppointments = async () => {
     try {
       const response = await api.getMyAppointments();
-      setAppointments(response.appointments || []);
+      setAppointments((response as any).appointments || []);
     } catch (error) {
       console.error('Error loading appointments:', error);
     } finally {
@@ -61,22 +61,25 @@ export default function PatientDashboard() {
     <DashboardLayout>
       <div className="space-y-8">
         {/* Welcome Section with Logo */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-primary p-8 text-white">
-          <div className="absolute right-8 top-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-            <img src={logoImage} alt="Klinik Sehat Logo" className="h-32 w-32 object-contain" />
-          </div>
-          <div className="relative z-10">
-            <h1 className="text-4xl font-bold mb-2">{getGreeting()}, {user?.full_name}! 👋</h1>
-            <p className="text-white/90 text-lg">Selamat datang di Dashboard Pasien Klinik Sehat</p>
-            <div className="mt-4 flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>Senin - Sabtu: 08.00 - 20.00 WIB</span>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-primary p-6 md:p-8 text-white">
+          <div className="flex flex-col-reverse md:block relative z-10">
+            <div>
+              <h1 className="text-2xl md:text-4xl font-bold mb-2">{getGreeting()}, {user?.full_name}! 👋</h1>
+              <p className="text-white/90 text-sm md:text-lg">Selamat datang di Dashboard Pasien Klinik Sehat</p>
+              <div className="mt-4 flex flex-wrap gap-4 text-xs md:text-sm">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>Senin - Sabtu: 08.00 - 20.00 WIB</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <span>Hotline: (021) 1234-5678</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                <span>Hotline: (021) 1234-5678</span>
-              </div>
+            </div>
+
+            <div className="mb-6 md:mb-0 md:absolute md:right-8 md:top-8 bg-white/90 backdrop-blur-sm rounded-2xl p-3 md:p-4 shadow-xl w-fit self-center md:self-auto">
+              <img src={logoImage} alt="Klinik Sehat Logo" className="h-16 w-16 md:h-32 md:w-32 object-contain" />
             </div>
           </div>
         </div>

@@ -107,7 +107,7 @@ export default function History() {
         </div>
 
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="w-full justify-start overflow-x-auto flex md:grid md:grid-cols-4 h-auto p-1">
             <TabsTrigger value="all">Semua ({appointments.length})</TabsTrigger>
             <TabsTrigger value="completed">
               Selesai ({completedAppointments.length})

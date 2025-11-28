@@ -204,8 +204,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </aside>
 
       {/* Main Content - Scrollable with left margin for fixed sidebar */}
-      <main className="flex-1 ml-56 overflow-y-auto">
-        <div className="p-8">{children}</div>
+      <main className="flex-1 lg:ml-56 ml-0 overflow-y-auto transition-all duration-300">
+        <div className="p-4 lg:p-8">{children}</div>
       </main>
     </div>
   );
