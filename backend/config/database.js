@@ -13,6 +13,8 @@ console.log('🔍 Environment variables check:');
 console.log('  MYSQL_URL:', process.env.MYSQL_URL ? 'SET' : 'NOT SET');
 console.log('  DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
 console.log('  MYSQLHOST:', process.env.MYSQLHOST || 'NOT SET');
+console.log('  MYSQLUSER:', process.env.MYSQLUSER ? 'SET' : 'NOT SET');
+console.log('  MYSQLPASSWORD:', process.env.MYSQLPASSWORD ? 'SET' : 'NOT SET');
 console.log('  MYSQLDATABASE:', process.env.MYSQLDATABASE || 'NOT SET');
 console.log('  DB_HOST:', process.env.DB_HOST || 'NOT SET');
 
@@ -26,8 +28,9 @@ if (mysqlUrl) {
     const url = new URL(mysqlUrl);
 
     // Decode username and password (they might be URL-encoded)
-    const username = decodeURIComponent(url.username || '');
-    const password = decodeURIComponent(url.password || '');
+    // Fallback to environment variables if URL parsing fails to get credentials
+    const username = decodeURIComponent(url.username || '') || process.env.MYSQLUSER || process.env.DB_USER;
+    const password = decodeURIComponent(url.password || '') || process.env.MYSQLPASSWORD || process.env.DB_PASSWORD;
 
     console.log('🔍 Parsed URL components:');
     console.log('  Protocol:', url.protocol);
