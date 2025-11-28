@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen md:flex md:items-center justify-center overflow-hidden bg-hero-gradient border-t-8 border-red-500" style={{ paddingTop: '150px' }}>
+    <section className="relative min-h-screen md:flex md:items-center justify-center overflow-hidden bg-hero-gradient">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
