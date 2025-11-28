@@ -29,7 +29,7 @@ if (mysqlUrl) {
   console.log('🔧 Using environment variables');
   // Support both custom and Railway's auto-generated MySQL variable names
   dbConfig = {
-    host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+    host: process.env.DB_HOST || process.env.MYSQLHOST || '127.0.0.1',
     user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
     password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
     database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'clinic_queue_db',
