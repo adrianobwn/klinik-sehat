@@ -130,15 +130,15 @@ npm run preview
 Setelah setup database, Anda dapat login dengan:
 
 **Admin:**
-- Email: admin@klinik.com
+- Email: admin@kliniksehat.com
 - Password: admin123
 
 **Dokter:**
-- Email: dokter@klinik.com
+- Email: dokter@kliniksehat.com
 - Password: dokter123
 
 **Pasien:**
-- Email: pasien@klinik.com
+- Email: pasien@kliniksehat.com
 - Password: pasien123
 
 > **Note**: Ganti password default setelah login pertama kali di production.
