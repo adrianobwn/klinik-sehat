@@ -1,42 +1,16 @@
 -- ================================================
 -- SCHEMA DATABASE KLINIK SEHAT
 -- Struktur Database Baru dengan Bahasa Indonesia
--- (Simplified - Tables Only)
+-- (Simplified - Tables Only - Safe Migration)
 -- ================================================
 
 -- Disable foreign key checks
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Drop existing tables if they exist
-DROP TABLE IF EXISTS konsultasi_online;
-DROP TABLE IF EXISTS riwayat_kunjungan;
-DROP TABLE IF EXISTS rekam_medis;
-DROP TABLE IF EXISTS notifikasi;
-DROP TABLE IF EXISTS pendaftaran_online;
-DROP TABLE IF EXISTS nomor_antrian;
-DROP TABLE IF EXISTS dokter;
-DROP TABLE IF EXISTS pasien;
-DROP TABLE IF EXISTS admin;
-DROP TABLE IF EXISTS dashboard_klinik;
-
--- Drop old tables if they exist
-DROP TABLE IF EXISTS consultation_messages;
-DROP TABLE IF EXISTS consultations;
-DROP TABLE IF EXISTS medical_records;
-DROP TABLE IF EXISTS queue;
-DROP TABLE IF EXISTS appointments;
-DROP TABLE IF EXISTS doctor_schedules;
-DROP TABLE IF EXISTS notifications;
-DROP TABLE IF EXISTS profiles;
-DROP TABLE IF EXISTS users;
-
--- Re-enable foreign key checks
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- ================================================
 -- 1. TABEL ADMIN
 -- ================================================
-CREATE TABLE admin (
+CREATE TABLE IF NOT EXISTS admin (
   id_admin INT PRIMARY KEY AUTO_INCREMENT,
   nama_admin VARCHAR(100) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
@@ -48,7 +22,7 @@ CREATE TABLE admin (
 -- ================================================
 -- 2. TABEL PASIEN
 -- ================================================
-CREATE TABLE pasien (
+CREATE TABLE IF NOT EXISTS pasien (
   NIK_pasien VARCHAR(16) PRIMARY KEY,
   nama_pasien VARCHAR(100) NOT NULL,
   tanggal_lahir DATE NOT NULL,
@@ -67,7 +41,7 @@ CREATE TABLE pasien (
 -- ================================================
 -- 3. TABEL DOKTER
 -- ================================================
-CREATE TABLE dokter (
+CREATE TABLE IF NOT EXISTS dokter (
   id_dokter INT PRIMARY KEY AUTO_INCREMENT,
   nama_dokter VARCHAR(100) NOT NULL,
   spesialisasi VARCHAR(100) NOT NULL,
@@ -86,7 +60,7 @@ CREATE TABLE dokter (
 -- ================================================
 -- 4. TABEL PENDAFTARAN ONLINE
 -- ================================================
-CREATE TABLE pendaftaran_online (
+CREATE TABLE IF NOT EXISTS pendaftaran_online (
   id_pendaftaran INT PRIMARY KEY AUTO_INCREMENT,
   NIK_pasien VARCHAR(16) NOT NULL,
   nama_pasien VARCHAR(100) NOT NULL,
@@ -107,7 +81,7 @@ CREATE TABLE pendaftaran_online (
 -- ================================================
 -- 5. TABEL NOMOR ANTRIAN
 -- ================================================
-CREATE TABLE nomor_antrian (
+CREATE TABLE IF NOT EXISTS nomor_antrian (
   id_antrian INT PRIMARY KEY AUTO_INCREMENT,
   nomor_antrian INT NOT NULL,
   id_pendaftaran INT,
@@ -132,7 +106,7 @@ CREATE TABLE nomor_antrian (
 -- ================================================
 -- 6. TABEL REKAM MEDIS
 -- ================================================
-CREATE TABLE rekam_medis (
+CREATE TABLE IF NOT EXISTS rekam_medis (
   id_rekam_medis INT PRIMARY KEY AUTO_INCREMENT,
   NIK_pasien VARCHAR(16) NOT NULL,
   nama_pasien VARCHAR(100) NOT NULL,
@@ -156,7 +130,7 @@ CREATE TABLE rekam_medis (
 -- ================================================
 -- 7. TABEL RIWAYAT KUNJUNGAN
 -- ================================================
-CREATE TABLE riwayat_kunjungan (
+CREATE TABLE IF NOT EXISTS riwayat_kunjungan (
   id_kunjungan INT PRIMARY KEY AUTO_INCREMENT,
   NIK_pasien VARCHAR(16) NOT NULL,
   nama_pasien VARCHAR(100) NOT NULL,
@@ -175,7 +149,7 @@ CREATE TABLE riwayat_kunjungan (
 -- ================================================
 -- 8. TABEL KONSULTASI ONLINE
 -- ================================================
-CREATE TABLE konsultasi_online (
+CREATE TABLE IF NOT EXISTS konsultasi_online (
   id_konsultasi INT PRIMARY KEY AUTO_INCREMENT,
   NIK_pasien VARCHAR(16) NOT NULL,
   nama_pasien VARCHAR(100) NOT NULL,
@@ -196,7 +170,7 @@ CREATE TABLE konsultasi_online (
 -- ================================================
 -- 9. TABEL NOTIFIKASI
 -- ================================================
-CREATE TABLE notifikasi (
+CREATE TABLE IF NOT EXISTS notifikasi (
   id_notifikasi INT PRIMARY KEY AUTO_INCREMENT,
   id_antrian INT,
   NIK_pasien VARCHAR(16),
@@ -218,7 +192,7 @@ CREATE TABLE notifikasi (
 -- ================================================
 -- 10. TABEL DASHBOARD KLINIK
 -- ================================================
-CREATE TABLE dashboard_klinik (
+CREATE TABLE IF NOT EXISTS dashboard_klinik (
   id_dashboard INT PRIMARY KEY AUTO_INCREMENT,
   tanggal_laporan DATE NOT NULL UNIQUE,
   jumlah_pasien_datang INT DEFAULT 0,
@@ -234,16 +208,16 @@ CREATE TABLE dashboard_klinik (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ================================================
--- INSERT SAMPLE DATA
+-- INSERT SAMPLE DATA (IGNORE IF EXISTS)
 -- ================================================
 
 -- Sample Admin
-INSERT INTO admin (nama_admin, email, password) VALUES
+INSERT IGNORE INTO admin (nama_admin, email, password) VALUES
 ('Admin Klinik', 'admin@kliniksehat.com', '$2a$10$GEiJn/W3kClHQV1sYkLTqeldBU.VUUDXNgtDHvZp02ZEXKe7ENgwe'),
 ('Admin Sistem', 'admin2@kliniksehat.com', '$2a$10$xrXX/8zRnrkpk1IA8r5lA.8Yq79wn9YK9ZALUW8YwyiSVptRTobYi');
 
 -- Sample Dokter
-INSERT INTO dokter (nama_dokter, spesialisasi, no_sip, no_hp, email, password, jadwal_praktik, status_aktif) VALUES
+INSERT IGNORE INTO dokter (nama_dokter, spesialisasi, no_sip, no_hp, email, password, jadwal_praktik, status_aktif) VALUES
 ('dr. Ahmad Hidayat, Sp.PD', 'Penyakit Dalam', 'SIP-001-2024', '081234567890', 'dokter@kliniksehat.com', '$2a$10$2EWoOUH.o11R8IuiS2HJFuVEAe5O1X494Eu/dCXqepwYTgq6Y.gyC', 
 '{"senin":"08:00-14:00","rabu":"08:00-14:00","jumat":"08:00-14:00"}', 'Aktif'),
 ('dr. Siti Nurhaliza, Sp.A', 'Anak', 'SIP-002-2024', '081234567891', 'siti@kliniksehat.com', '$2a$10$sViM8yXfLjjHNFMYqKPJEucjixrDZLYmW4bfsEXzsd1sXwM0PFLKe',
@@ -252,16 +226,14 @@ INSERT INTO dokter (nama_dokter, spesialisasi, no_sip, no_hp, email, password, j
 '{"senin":"14:00-20:00","rabu":"14:00-20:00","jumat":"14:00-20:00"}', 'Aktif');
 
 -- Sample Pasien
-INSERT INTO pasien (NIK_pasien, nama_pasien, tanggal_lahir, alamat, no_hp, email, jenis_kelamin, golongan_darah, password) VALUES
+INSERT IGNORE INTO pasien (NIK_pasien, nama_pasien, tanggal_lahir, alamat, no_hp, email, jenis_kelamin, golongan_darah, password) VALUES
 ('3374010101900001', 'Andi Wijaya', '1990-01-01', 'Jl. Merdeka No. 123, Semarang', '082123456789', 'pasien@kliniksehat.com', 'Laki-laki', 'A+', '$2a$10$GEiJn/W3kClHQV1sYkLTqeldBU.VUUDXNgtDHvZp02ZEXKe7ENgwe'),
 ('3374020202910002', 'Dewi Lestari', '1991-02-02', 'Jl. Sudirman No. 456, Semarang', '082123456790', 'dewi@email.com', 'Perempuan', 'B+', '$2a$10$xrXX/8zRnrkpk1IA8r5lA.8Yq79wn9YK9ZALUW8YwyiSVptRTobYi'),
 ('3374030303920003', 'Citra Pratiwi', '1992-03-03', 'Jl. Diponegoro No. 789, Semarang', '082123456791', 'citra@email.com', 'Perempuan', 'O+', '$2a$10$2EWoOUH.o11R8IuiS2HJFuVEAe5O1X494Eu/dCXqepwYTgq6Y.gyC');
 
 -- Sample Dashboard untuk hari ini
-INSERT INTO dashboard_klinik (tanggal_laporan, jumlah_pasien_datang, jumlah_pasien_antri, jumlah_pasien_selesai, jumlah_pasien_batal, jumlah_pendaftaran_online) VALUES
+INSERT IGNORE INTO dashboard_klinik (tanggal_laporan, jumlah_pasien_datang, jumlah_pasien_antri, jumlah_pasien_selesai, jumlah_pasien_batal, jumlah_pendaftaran_online) VALUES
 (CURDATE(), 0, 0, 0, 0, 0);
 
--- Additional indexes for better performance
-CREATE INDEX idx_pendaftaran_tanggal_status ON pendaftaran_online(tanggal_pendaftaran, status_pendaftaran);
-CREATE INDEX idx_antrian_tanggal_status ON nomor_antrian(tanggal_antrian, status_antrian);
-CREATE INDEX idx_rekam_medis_nik_tanggal ON rekam_medis(NIK_pasien, tanggal_periksa);
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
