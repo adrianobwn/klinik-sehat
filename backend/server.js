@@ -18,6 +18,29 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Auto-setup database on first run
+async function setupDatabase() {
+  try {
+    console.log('🔍 Checking database setup...');
+    const [tables] = await pool.query("SHOW TABLES LIKE 'admin'");
+    
+    if (tables.length === 0) {
+      console.log('📋 Tables not found. Creating database schema...');
+      const sqlPath = path.join(__dirname, 'migrations', 'create_tables_only.sql');
+      const sql = fs.readFileSync(sqlPath, 'utf8');
+      await pool.query(sql);
+      console.log('✅ Database tables created successfully!');
+    } else {
+      console.log('✅ Database tables already exist. Skipping setup.');
+    }
+  } catch (error) {
+    console.error('❌ Database setup error:', error.message);
+  }
+}
+
+// Run setup before starting server
+await setupDatabase();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
