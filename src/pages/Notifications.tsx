@@ -4,9 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, CheckCheck, Calendar, AlertCircle, Info, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import { api } from '@/lib/api';
 
 interface Notification {
   id_notifikasi: number;
@@ -30,17 +28,14 @@ export default function Notifications() {
 
   const fetchNotifications = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/auth/notifications`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotifications(response.data.notifications);
+      const response = await api.getNotifications() as { notifications: Notification[] };
+      setNotifications(response.notifications);
     } catch (error: any) {
       console.error('Fetch notifications error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.response?.data?.message || "Gagal mengambil notifikasi"
+        description: error.message || "Gagal mengambil notifikasi"
       });
     } finally {
       setLoading(false);
@@ -50,16 +45,11 @@ export default function Notifications() {
   const handleMarkAllAsRead = async () => {
     try {
       setMarking(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `${API_URL}/auth/notifications/mark-all-read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.markAllNotificationsRead() as { message: string };
 
       toast({
         title: "Berhasil",
-        description: response.data.message
+        description: response.message
       });
 
       // Refresh notifications
@@ -69,7 +59,7 @@ export default function Notifications() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.response?.data?.message || "Gagal menandai notifikasi"
+        description: error.message || "Gagal menandai notifikasi"
       });
     } finally {
       setMarking(false);
@@ -140,8 +130,8 @@ export default function Notifications() {
             </p>
           </div>
           {unreadCount > 0 && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={marking}

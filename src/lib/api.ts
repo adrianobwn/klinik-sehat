@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface ApiResponse<T = any> {
   data?: T;
@@ -77,6 +77,22 @@ class ApiService {
       method: 'PUT',
       body: JSON.stringify(passwordData),
     });
+  }
+
+  // Notifications (User)
+  async getNotifications() {
+    return this.request('/auth/notifications');
+  }
+
+  async markAllNotificationsRead() {
+    return this.request('/auth/notifications/mark-all-read', {
+      method: 'PUT',
+      body: JSON.stringify({}),
+    });
+  }
+
+  async getUnreadNotificationCount() {
+    return this.request<{ unreadCount: number }>('/auth/notifications');
   }
 
   // Doctor - Schedules
