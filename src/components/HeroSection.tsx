@@ -18,7 +18,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-hero-gradient pt-20">
+    <section className="relative min-h-screen md:flex md:items-center justify-center overflow-hidden bg-hero-gradient border-t-8 border-red-500" style={{ paddingTop: '150px' }}>
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -47,14 +47,16 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-10 pt-20 md:pt-0">
+        {/* Mobile Spacer to prevent navbar overlap */}
+        <div className="h-32 md:hidden"></div>
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="space-y-8 mt-8 md:mt-0"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -86,7 +88,7 @@ const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-xl text-muted-foreground leading-relaxed"
             >
-              Sistem antrian digital yang terintegrasi dengan rekam medis elektronik 
+              Sistem antrian digital yang terintegrasi dengan rekam medis elektronik
               dan layanan konsultasi online. Nikmati pengalaman berobat yang lebih praktis dan efisien.
             </motion.p>
 
@@ -158,9 +160,9 @@ const HeroSection = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 blur-3xl rounded-3xl" />
               <div className="relative rounded-3xl shadow-elevated border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 h-96 overflow-hidden backdrop-blur-sm">
-                <img 
-                  src={doctorImage} 
-                  alt="Dokter Klinik Sehat" 
+                <img
+                  src={doctorImage}
+                  alt="Dokter Klinik Sehat"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6 text-center text-white">
@@ -168,7 +170,7 @@ const HeroSection = () => {
                   <p className="text-sm opacity-90">Sistem Antrian Digital</p>
                 </div>
               </div>
-              
+
               {/* Floating stats */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
