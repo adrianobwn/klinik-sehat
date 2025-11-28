@@ -18,7 +18,7 @@ export default function History() {
   const loadHistory = async () => {
     try {
       const response = await api.getMyAppointments();
-      setAppointments(response.appointments || []);
+      setAppointments((response as any).appointments || []);
     } catch (error: any) {
       toast.error('Gagal memuat riwayat');
     } finally {

@@ -19,7 +19,7 @@ export default function QueueStatus() {
   const loadAppointments = async () => {
     try {
       const response = await api.getMyAppointments();
-      const activeAppointments = response.appointments?.filter(
+      const activeAppointments = (response as any).appointments?.filter(
         (a: any) => a.queue_status && a.queue_status !== 'Selesai' && a.queue_status !== 'Batal'
       ) || [];
       setAppointments(activeAppointments);
@@ -112,13 +112,12 @@ export default function QueueStatus() {
               return (
                 <Card key={appointment.id} className="overflow-hidden">
                   <div
-                    className={`h-2 ${
-                      normalizedStatus === 'in_progress'
+                    className={`h-2 ${normalizedStatus === 'in_progress'
                         ? 'bg-green-500'
                         : normalizedStatus === 'completed'
-                        ? 'bg-gray-500'
-                        : 'bg-yellow-500'
-                    }`}
+                          ? 'bg-gray-500'
+                          : 'bg-yellow-500'
+                      }`}
                   />
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
