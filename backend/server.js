@@ -38,9 +38,6 @@ async function setupDatabase() {
   }
 }
 
-// Run setup before starting server
-await setupDatabase();
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -93,6 +90,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Start server with database setup
+(async () => {
+  await setupDatabase();
+  
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+})();
