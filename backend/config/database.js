@@ -22,17 +22,35 @@ const mysqlUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
 
 if (mysqlUrl) {
   console.log('🔗 Using MySQL URL connection');
-  const url = new URL(mysqlUrl);
-  dbConfig = {
-    host: url.hostname,
-    user: url.username,
-    password: url.password,
-    database: url.pathname.substring(1),
-    port: url.port || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-  };
+  try {
+    const url = new URL(mysqlUrl);
+
+    // Decode username and password (they might be URL-encoded)
+    const username = decodeURIComponent(url.username || '');
+    const password = decodeURIComponent(url.password || '');
+
+    console.log('🔍 Parsed URL components:');
+    console.log('  Protocol:', url.protocol);
+    console.log('  Hostname:', url.hostname);
+    console.log('  Username:', username ? '***' : '(empty)');
+    console.log('  Password:', password ? '***' : '(empty)');
+    console.log('  Database:', url.pathname.substring(1));
+    console.log('  Port:', url.port || 3306);
+
+    dbConfig = {
+      host: url.hostname,
+      user: username,
+      password: password,
+      database: url.pathname.substring(1),
+      port: url.port || 3306,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0
+    };
+  } catch (error) {
+    console.error('❌ Error parsing MYSQL_URL:', error.message);
+    throw error;
+  }
 } else {
   console.log('🔧 Using environment variables');
 
