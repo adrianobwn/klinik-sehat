@@ -35,17 +35,41 @@ if (mysqlUrl) {
   };
 } else {
   console.log('🔧 Using environment variables');
+
+  // Detect if we're in a Railway/production environment
+  const isProduction = process.env.RAILWAY_ENVIRONMENT ||
+    process.env.MYSQLDATABASE ||
+    process.env.NODE_ENV === 'production';
+
+  // In production, don't use localhost defaults
+  const defaultHost = isProduction ? undefined : '127.0.0.1';
+  const defaultUser = isProduction ? undefined : 'root';
+  const defaultPassword = isProduction ? undefined : '';
+  const defaultDatabase = isProduction ? undefined : 'clinic_queue_db';
+
   // Support both custom and Railway's auto-generated MySQL variable names
   dbConfig = {
-    host: process.env.DB_HOST || process.env.MYSQLHOST || '127.0.0.1',
-    user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
-    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
-    database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'clinic_queue_db',
+    host: process.env.DB_HOST || process.env.MYSQLHOST || defaultHost,
+    user: process.env.DB_USER || process.env.MYSQLUSER || defaultUser,
+    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || defaultPassword,
+    database: process.env.DB_NAME || process.env.MYSQLDATABASE || defaultDatabase,
     port: process.env.DB_PORT || process.env.MYSQLPORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
   };
+
+  // Validate required fields in production
+  if (isProduction && (!dbConfig.host || !dbConfig.user || !dbConfig.database)) {
+    console.error('❌ Missing required database configuration in production environment!');
+    console.error('   Required: MYSQL_URL or (MYSQLHOST + MYSQLUSER + MYSQLDATABASE)');
+    console.error('   Available variables:', {
+      MYSQLHOST: process.env.MYSQLHOST ? 'SET' : 'NOT SET',
+      MYSQLUSER: process.env.MYSQLUSER ? 'SET' : 'NOT SET',
+      MYSQLDATABASE: process.env.MYSQLDATABASE ? 'SET' : 'NOT SET',
+      MYSQL_URL: process.env.MYSQL_URL ? 'SET' : 'NOT SET'
+    });
+  }
 }
 
 console.log('🔧 Database Configuration:');
