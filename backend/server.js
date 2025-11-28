@@ -39,27 +39,6 @@ app.get('/health', (req, res) => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Temporary Route to Reset Admin Password
-app.get('/reset-admin-password', async (req, res) => {
-  try {
-    const hash = '$2a$10$ZoDgl/wenIMJyLLlhV4UaOHNU0bKffJXvmS/46D0ZO2EdYKu3KvQS'; // 123456
-    const email = 'admin@kliniksehat.com';
-
-    // Try to update first
-    const [result] = await pool.query("UPDATE admin SET password = ? WHERE email = ?", [hash, email]);
-
-    if (result.affectedRows === 0) {
-      // If not found, insert
-      await pool.query("INSERT INTO admin (nama_admin, email, password) VALUES (?, ?, ?)", ['Admin Baru', email, hash]);
-      res.send(`Admin tidak ditemukan, jadi saya BUAT BARU.<br><br>Email: <b>${email}</b><br>Password: <b>123456</b><br><br>Silakan login sekarang!`);
-    } else {
-      res.send(`Password admin berhasil di-reset.<br><br>Email: <b>${email}</b><br>Password: <b>123456</b><br><br>Silakan login sekarang!`);
-    }
-  } catch (error) {
-    res.status(500).send('Gagal: ' + error.message);
-  }
-});
-
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
