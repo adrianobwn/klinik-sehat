@@ -13,6 +13,7 @@ async function setupDatabase() {
   let connection;
 
   try {
+    console.log('🚀 Starting Database Setup Script v2.0 (Sequential Execution)');
     console.log('🔍 Checking database setup...');
 
     connection = await mysql.createConnection({
