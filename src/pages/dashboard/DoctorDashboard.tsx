@@ -41,7 +41,7 @@ export default function DoctorDashboard() {
   const loadTodayPatients = async () => {
     try {
       const response = await api.getTodayPatients();
-      setPatients(response.patients || []);
+      setPatients((response as any).patients || []);
     } catch (error) {
       console.error('Error loading patients:', error);
     } finally {
@@ -68,18 +68,20 @@ export default function DoctorDashboard() {
       <div className="space-y-8">
         {/* Welcome Section with Logo */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-primary p-6 md:p-8 text-white">
-          <div className="flex flex-col-reverse md:block relative z-10">
-            <div>
+          <div className="relative z-10 flex flex-col md:block">
+            {/* Logo - Mobile: Top, Desktop: Absolute Right */}
+            <div className="mb-6 md:mb-0 md:absolute md:right-0 md:top-0 bg-white/90 backdrop-blur-sm rounded-2xl p-3 md:p-4 shadow-xl w-fit">
+              <img src={logoImage} alt="Klinik Sehat Logo" className="h-12 w-12 md:h-32 md:w-32 object-contain" />
+            </div>
+
+            {/* Text Content */}
+            <div className="md:pr-40">
               <h1 className="text-2xl md:text-4xl font-bold mb-2">{getGreeting()}, Dr. {user?.full_name}! 👨‍⚕️</h1>
               <p className="text-white/90 text-sm md:text-lg">Semangat melayani pasien hari ini</p>
               <div className="mt-4 flex items-center gap-2 text-xs md:text-sm">
                 <Calendar className="w-4 h-4" />
                 <span>{getCurrentDate()}</span>
               </div>
-            </div>
-
-            <div className="mb-6 md:mb-0 md:absolute md:right-8 md:top-8 bg-white/90 backdrop-blur-sm rounded-2xl p-3 md:p-4 shadow-xl w-fit self-center md:self-auto">
-              <img src={logoImage} alt="Klinik Sehat Logo" className="h-16 w-16 md:h-32 md:w-32 object-contain" />
             </div>
           </div>
         </div>
