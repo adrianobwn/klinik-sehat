@@ -8,6 +8,12 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+console.log('🔧 Database Configuration:');
+console.log('  DB_HOST:', process.env.DB_HOST || 'localhost (default)');
+console.log('  DB_USER:', process.env.DB_USER || 'root (default)');
+console.log('  DB_NAME:', process.env.DB_NAME || 'clinic_queue_db (default)');
+console.log('  DB_PORT:', process.env.DB_PORT || '3306 (default)');
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
