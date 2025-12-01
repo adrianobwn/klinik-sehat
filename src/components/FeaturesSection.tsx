@@ -105,7 +105,7 @@ const FeaturesSection = () => {
     {
       icon: Video,
       title: "Konsultasi Online",
-      description: "Layanan telemedicine untuk konsultasi jarak jauh. Video call HD dengan dokter kapan saja.",
+      description: "Chat dengan dokter secara online. Konsultasi cepat tanpa harus datang ke klinik.",
       color: "from-purple-500 to-indigo-500",
     },
     {
@@ -139,7 +139,7 @@ const FeaturesSection = () => {
       {/* Background decoration */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_50%)]" />
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:radial-gradient(white,transparent_85%)]" />
-      
+
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -278,29 +278,29 @@ const FeaturesSection = () => {
 
         {/* Old features - commented out but kept for reference */}
         <div className="hidden">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="p-6 bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow-primary group cursor-pointer h-full">
-                <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="p-6 bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 hover:shadow-glow-primary group cursor-pointer h-full">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

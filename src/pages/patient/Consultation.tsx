@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
-import { Plus, MessageSquare, Send, Video } from 'lucide-react';
+import { Plus, MessageSquare, Send } from 'lucide-react';
 
 export default function Consultation() {
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -39,8 +39,8 @@ export default function Consultation() {
         api.getDoctors(),
         api.getMyConsultations(),
       ]);
-      setDoctors(doctorsRes.doctors || []);
-      setConsultations(consultationsRes.consultations || []);
+      setDoctors((doctorsRes as any).doctors || []);
+      setConsultations((consultationsRes as any).consultations || []);
     } catch (error: any) {
       toast.error('Gagal memuat data');
     } finally {
@@ -53,7 +53,7 @@ export default function Consultation() {
     try {
       // Send first message to create consultation
       await api.sendConsultationMessage(
-        parseInt(formData.doctor_id), 
+        parseInt(formData.doctor_id),
         formData.notes || 'Halo Dokter, saya ingin berkonsultasi.'
       );
       toast.success('Konsultasi berhasil dibuat');
@@ -69,7 +69,7 @@ export default function Consultation() {
     setSelectedConsultation(consultation);
     try {
       const response = await api.getConsultationMessages(consultation.doctor_id);
-      setMessages(response.messages || []);
+      setMessages((response as any).messages || []);
       setChatDialogOpen(true);
     } catch (error: any) {
       toast.error('Gagal memuat pesan');
@@ -82,7 +82,7 @@ export default function Consultation() {
     try {
       await api.sendConsultationMessage(selectedConsultation.doctor_id, newMessage);
       const response = await api.getConsultationMessages(selectedConsultation.doctor_id);
-      setMessages(response.messages || []);
+      setMessages((response as any).messages || []);
       setNewMessage('');
       toast.success('Pesan terkirim');
     } catch (error: any) {
@@ -165,23 +165,7 @@ export default function Consultation() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="type">Tipe Konsultasi</Label>
-                  <Select
-                    value={formData.consultation_type}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, consultation_type: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="chat">Chat</SelectItem>
-                      <SelectItem value="video">Video Call</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+
 
                 <div className="space-y-2">
                   <Label htmlFor="scheduled_at">Jadwal (opsional)</Label>
@@ -228,18 +212,8 @@ export default function Consultation() {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div className="flex items-center space-x-4">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          consultation.consultation_type === 'video'
-                            ? 'bg-blue-500/10'
-                            : 'bg-green-500/10'
-                        }`}
-                      >
-                        {consultation.consultation_type === 'video' ? (
-                          <Video className="w-6 h-6 text-blue-500" />
-                        ) : (
-                          <MessageSquare className="w-6 h-6 text-green-500" />
-                        )}
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-green-500/10">
+                        <MessageSquare className="w-6 h-6 text-green-500" />
                       </div>
                       <div>
                         <p className="font-semibold">Dr. {consultation.doctor_name}</p>
@@ -288,18 +262,16 @@ export default function Consultation() {
                 messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${
-                      msg.sender_name !== selectedConsultation?.doctor_name
-                        ? 'justify-end'
-                        : 'justify-start'
-                    }`}
+                    className={`flex ${msg.sender_name !== selectedConsultation?.doctor_name
+                      ? 'justify-end'
+                      : 'justify-start'
+                      }`}
                   >
                     <div
-                      className={`max-w-[85%] sm:max-w-[70%] p-2 sm:p-3 rounded-lg ${
-                        msg.sender_name !== selectedConsultation?.doctor_name
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-background border'
-                      }`}
+                      className={`max-w-[85%] sm:max-w-[70%] p-2 sm:p-3 rounded-lg ${msg.sender_name !== selectedConsultation?.doctor_name
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background border'
+                        }`}
                     >
                       <p className="text-xs sm:text-sm font-semibold mb-1">{msg.sender_name}</p>
                       <p className="text-xs sm:text-sm break-words">{msg.message}</p>
