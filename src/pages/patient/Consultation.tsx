@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,9 @@ export default function Consultation() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [chatDialogOpen, setChatDialogOpen] = useState(false);
+
+  // Ref for auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     doctor_id: '',
@@ -65,11 +68,20 @@ export default function Consultation() {
     }
   };
 
+  // Load messages function (reusable)
+  const loadMessages = async (doctorId: number) => {
+    try {
+      const response = await api.getConsultationMessages(doctorId);
+      setMessages((response as any).messages || []);
+    } catch (error: any) {
+      console.error('Load messages error:', error);
+    }
+  };
+
   const handleOpenChat = async (consultation: any) => {
     setSelectedConsultation(consultation);
     try {
-      const response = await api.getConsultationMessages(consultation.doctor_id);
-      setMessages((response as any).messages || []);
+      await loadMessages(consultation.doctor_id);
       setChatDialogOpen(true);
     } catch (error: any) {
       toast.error('Gagal memuat pesan');
@@ -81,14 +93,41 @@ export default function Consultation() {
 
     try {
       await api.sendConsultationMessage(selectedConsultation.doctor_id, newMessage);
-      const response = await api.getConsultationMessages(selectedConsultation.doctor_id);
-      setMessages((response as any).messages || []);
+      await loadMessages(selectedConsultation.doctor_id);
       setNewMessage('');
       toast.success('Pesan terkirim');
     } catch (error: any) {
       toast.error('Gagal mengirim pesan');
     }
   };
+
+  // Auto-scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Realtime polling effect
+  useEffect(() => {
+    if (!chatDialogOpen || !selectedConsultation) return;
+
+    console.log('🔄 Starting chat polling for doctor:', selectedConsultation.doctor_id);
+
+    // Poll every 3 seconds
+    const interval = setInterval(() => {
+      loadMessages(selectedConsultation.doctor_id);
+    }, 3000);
+
+    // Cleanup on unmount or dialog close
+    return () => {
+      console.log('🛑 Stopping chat polling');
+      clearInterval(interval);
+    };
+  }, [chatDialogOpen, selectedConsultation]);
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const resetForm = () => {
     setFormData({
@@ -284,6 +323,8 @@ export default function Consultation() {
               ) : (
                 <p className="text-center text-muted-foreground">Belum ada pesan</p>
               )}
+              {/* Scroll anchor */}
+              <div ref={messagesEndRef} />
             </div>
             <div className="flex space-x-2 p-4 border-t">
               <Input
