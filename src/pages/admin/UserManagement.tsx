@@ -14,7 +14,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 
 export default function UserManagement() {
   console.log('🔍 UserManagement component rendering...');
-  
+
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -34,18 +34,18 @@ export default function UserManagement() {
     try {
       setLoading(true);
       console.log('📡 Fetching users with filter:', filterRole);
-      
+
       // Convert 'all' to empty string for API
       const roleFilter = filterRole === 'all' ? '' : filterRole;
       const response: any = await api.getAllUsers(roleFilter);
       console.log('✅ Users response:', response);
-      
+
       // Handle different response formats
       const usersList = response?.users || response || [];
       console.log('📊 Users list:', usersList);
-      
+
       setUsers(Array.isArray(usersList) ? usersList : []);
-      
+
       if (usersList.length === 0) {
         console.log('⚠️ No users found');
         toast.info('Tidak ada data user');
@@ -66,10 +66,11 @@ export default function UserManagement() {
     e.preventDefault();
     try {
       if (editingUser) {
-        await api.updateUser(editingUser.id, { 
+        await api.updateUser(editingUser.id, {
           role: formData.role,
+          old_role: editingUser.role, // Send the old role to backend
           email: editingUser.email,
-          full_name: editingUser.full_name 
+          full_name: editingUser.full_name
         });
         toast.success('Role user berhasil diperbarui');
       }
@@ -91,7 +92,7 @@ export default function UserManagement() {
 
   const handleDelete = async (user: any) => {
     if (!confirm('Yakin ingin menghapus user ini?')) return;
-    
+
     try {
       await api.deleteUser(user.id, user.role);
       toast.success('User berhasil dihapus');
@@ -128,160 +129,160 @@ export default function UserManagement() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       ) : (
-      <div className="space-y-4 sm:space-y-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Kelola User</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Ubah role dan hapus user</p>
-          </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Role User</DialogTitle>
-              </DialogHeader>
-              {editingUser && (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Nama User</Label>
-                    <Input value={editingUser.full_name} disabled />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input value={editingUser.email} disabled />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role *</Label>
-                    <Select
-                      value={formData.role}
-                      onValueChange={(value) => setFormData({ ...formData, role: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="dokter">Dokter</SelectItem>
-                        <SelectItem value="pasien">Pasien</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                      Batal
-                    </Button>
-                    <Button type="submit">Update Role</Button>
-                  </div>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Daftar User</CardTitle>
-              <Select value={filterRole} onValueChange={setFilterRole}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Filter by role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Role</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="dokter">Dokter</SelectItem>
-                  <SelectItem value="pasien">Pasien</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="space-y-4 sm:space-y-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Kelola User</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Ubah role dan hapus user</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            {users.length > 0 ? (
-              <div className="overflow-x-auto -mx-6 sm:mx-0">
-                <div className="inline-block min-w-full align-middle">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="whitespace-nowrap">Nama</TableHead>
-                        <TableHead className="whitespace-nowrap hidden sm:table-cell">Email</TableHead>
-                        <TableHead className="whitespace-nowrap">Role</TableHead>
-                        <TableHead className="whitespace-nowrap hidden md:table-cell">Telepon</TableHead>
-                        <TableHead className="whitespace-nowrap hidden lg:table-cell">Tgl Daftar</TableHead>
-                        <TableHead className="text-right whitespace-nowrap">Aksi</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {users.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">
-                            <div>
-                              <div className="font-medium">{user.full_name}</div>
-                              <div className="text-xs text-muted-foreground sm:hidden">{user.email}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
-                          <TableCell>{getRoleBadge(user.role)}</TableCell>
-                          <TableCell className="hidden md:table-cell">{user.phone || '-'}</TableCell>
-                          <TableCell className="hidden lg:table-cell">
-                            {new Date(user.created_at).toLocaleDateString('id-ID')}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end space-x-1 sm:space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleEdit(user)}
-                              >
-                                <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleDelete(user)}
-                              >
-                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Role User</DialogTitle>
+                </DialogHeader>
+                {editingUser && (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Nama User</Label>
+                      <Input value={editingUser.full_name} disabled />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input value={editingUser.email} disabled />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Role *</Label>
+                      <Select
+                        value={formData.role}
+                        onValueChange={(value) => setFormData({ ...formData, role: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="dokter">Dokter</SelectItem>
+                          <SelectItem value="pasien">Pasien</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex justify-end space-x-2">
+                      <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                        Batal
+                      </Button>
+                      <Button type="submit">Update Role</Button>
+                    </div>
+                  </form>
+                )}
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Daftar User</CardTitle>
+                <Select value={filterRole} onValueChange={setFilterRole}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Role</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="dokter">Dokter</SelectItem>
+                    <SelectItem value="pasien">Pasien</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {users.length > 0 ? (
+                <div className="overflow-x-auto -mx-6 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="whitespace-nowrap">Nama</TableHead>
+                          <TableHead className="whitespace-nowrap hidden sm:table-cell">Email</TableHead>
+                          <TableHead className="whitespace-nowrap">Role</TableHead>
+                          <TableHead className="whitespace-nowrap hidden md:table-cell">Telepon</TableHead>
+                          <TableHead className="whitespace-nowrap hidden lg:table-cell">Tgl Daftar</TableHead>
+                          <TableHead className="text-right whitespace-nowrap">Aksi</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {users.map((user) => (
+                          <TableRow key={user.id}>
+                            <TableCell className="font-medium">
+                              <div>
+                                <div className="font-medium">{user.full_name}</div>
+                                <div className="text-xs text-muted-foreground sm:hidden">{user.email}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">{user.email}</TableCell>
+                            <TableCell>{getRoleBadge(user.role)}</TableCell>
+                            <TableCell className="hidden md:table-cell">{user.phone || '-'}</TableCell>
+                            <TableCell className="hidden lg:table-cell">
+                              {new Date(user.created_at).toLocaleDateString('id-ID')}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end space-x-1 sm:space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleEdit(user)}
+                                >
+                                  <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleDelete(user)}
+                                >
+                                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="mx-auto w-24 h-24 mb-4 rounded-full bg-muted flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 text-muted-foreground"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 mb-4 rounded-full bg-muted flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 text-muted-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {filterRole !== 'all' ? `Tidak ada user dengan role: ${filterRole}` : 'Belum ada user terdaftar'}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {filterRole !== 'all'
+                      ? 'Coba ganti filter untuk melihat user dengan role lain'
+                      : 'User baru dapat mendaftar melalui halaman registrasi'}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {filterRole !== 'all' ? `Tidak ada user dengan role: ${filterRole}` : 'Belum ada user terdaftar'}
-                </h3>
-                <p className="text-muted-foreground">
-                  {filterRole !== 'all'
-                    ? 'Coba ganti filter untuk melihat user dengan role lain' 
-                    : 'User baru dapat mendaftar melalui halaman registrasi'}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
     </DashboardLayout>
   );

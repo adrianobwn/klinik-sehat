@@ -101,8 +101,8 @@ export const callQueue = async (req, res) => {
       await pool.query(
         `INSERT INTO notifikasi (id_antrian, NIK_pasien, judul_notifikasi, isi_notifikasi, jenis_notifikasi, status_antrian)
          VALUES (?, ?, ?, ?, 'Antrian', 'Dipanggil')`,
-        [queue_id, queueInfo[0].NIK_pasien, 'Giliran Anda', 
-         `Nomor antrian ${queueInfo[0].nomor_antrian} dipanggil. Silakan menuju ruang praktek.`]
+        [queue_id, queueInfo[0].NIK_pasien, 'Giliran Anda',
+          `Nomor antrian ${queueInfo[0].nomor_antrian} dipanggil. Silakan menuju ruang praktek.`]
       );
     }
 
@@ -162,7 +162,7 @@ export const skipQueue = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const { role } = req.query;
-    
+
     let users = [];
 
     if (!role || role === 'admin') {
@@ -204,18 +204,18 @@ export const getAllUsers = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { 
-      email, 
-      password, 
-      role, 
-      full_name, 
-      phone, 
-      address, 
-      date_of_birth, 
+    const {
+      email,
+      password,
+      role,
+      full_name,
+      phone,
+      address,
+      date_of_birth,
       gender,
       nik,
       specialization,
-      sip 
+      sip
     } = req.body;
 
     // Validate phone number if provided
@@ -275,7 +275,9 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { role, email, password, full_name, phone, address, date_of_birth, gender, specialization } = req.body;
+    const { role, old_role, email, password, full_name, phone, address, date_of_birth, gender, specialization } = req.body;
+
+    console.log('🔄 [Admin] Updating user:', { id, role, old_role, full_name, email });
 
     // Validate phone number if provided
     if (phone) {
@@ -294,6 +296,113 @@ export const updateUser = async (req, res) => {
     }
 
     const hashedPassword = password && password.trim() !== '' ? await bcrypt.hash(password, 10) : null;
+
+    // Detect old role if not provided
+    let currentRole = old_role;
+    if (!currentRole) {
+      console.log('🔍 [Admin] Detecting current role for user:', id);
+
+      // Check in admin table
+      const [adminCheck] = await pool.query('SELECT id_admin FROM admin WHERE id_admin = ?', [id]);
+      if (adminCheck.length > 0) {
+        currentRole = 'admin';
+      }
+
+      // Check in dokter table
+      if (!currentRole) {
+        const [dokterCheck] = await pool.query('SELECT id_dokter FROM dokter WHERE id_dokter = ?', [id]);
+        if (dokterCheck.length > 0) {
+          currentRole = 'dokter';
+        }
+      }
+
+      // Check in pasien table
+      if (!currentRole) {
+        const [pasienCheck] = await pool.query('SELECT NIK_pasien FROM pasien WHERE NIK_pasien = ?', [id]);
+        if (pasienCheck.length > 0) {
+          currentRole = 'pasien';
+        }
+      }
+
+      console.log('✅ [Admin] Detected current role:', currentRole);
+    }
+
+    // If role is changing, we need to migrate the user
+    if (currentRole && currentRole !== role) {
+      console.log('🔄 [Admin] Role is changing from', currentRole, 'to', role);
+
+      // Get current user data
+      let userData = null;
+      if (currentRole === 'admin') {
+        const [admin] = await pool.query('SELECT * FROM admin WHERE id_admin = ?', [id]);
+        userData = admin[0];
+      } else if (currentRole === 'dokter') {
+        const [dokter] = await pool.query('SELECT * FROM dokter WHERE id_dokter = ?', [id]);
+        userData = dokter[0];
+      } else if (currentRole === 'pasien') {
+        const [pasien] = await pool.query('SELECT * FROM pasien WHERE NIK_pasien = ?', [id]);
+        userData = pasien[0];
+      }
+
+      if (!userData) {
+        return res.status(404).json({ message: 'User tidak ditemukan' });
+      }
+
+      console.log('📦 [Admin] Current user data:', userData);
+
+      // Use provided password or keep existing one
+      const finalPassword = hashedPassword || userData.password;
+
+      // Create user in new role table
+      if (role === 'admin') {
+        await pool.query(
+          'INSERT INTO admin (nama_admin, email, password) VALUES (?, ?, ?)',
+          [full_name || userData.nama_admin || userData.nama_dokter || userData.nama_pasien,
+          email || userData.email,
+            finalPassword]
+        );
+      } else if (role === 'dokter') {
+        await pool.query(
+          'INSERT INTO dokter (nama_dokter, spesialisasi, no_sip, no_hp, email, password, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [full_name || userData.nama_admin || userData.nama_dokter || userData.nama_pasien,
+          specialization || userData.spesialisasi || 'Umum',
+          userData.no_sip || `SIP-${Date.now()}`,
+          phone || userData.no_hp || '',
+          email || userData.email,
+            finalPassword,
+            'Aktif']
+        );
+      } else if (role === 'pasien') {
+        // For pasien, we need a NIK - use the old ID or generate one
+        const nik = (currentRole === 'pasien') ? id : `NIK${Date.now()}`;
+        await pool.query(
+          'INSERT INTO pasien (NIK_pasien, nama_pasien, tanggal_lahir, alamat, no_hp, email, jenis_kelamin, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [nik,
+            full_name || userData.nama_admin || userData.nama_dokter || userData.nama_pasien,
+            date_of_birth || userData.tanggal_lahir || '2000-01-01',
+            address || userData.alamat || '',
+            phone || userData.no_hp || '',
+            email || userData.email,
+            gender || userData.jenis_kelamin || 'Laki-laki',
+            finalPassword]
+        );
+      }
+
+      // Delete from old role table
+      if (currentRole === 'admin') {
+        await pool.query('DELETE FROM admin WHERE id_admin = ?', [id]);
+      } else if (currentRole === 'dokter') {
+        await pool.query('DELETE FROM dokter WHERE id_dokter = ?', [id]);
+      } else if (currentRole === 'pasien') {
+        await pool.query('DELETE FROM pasien WHERE NIK_pasien = ?', [id]);
+      }
+
+      console.log('✅ [Admin] User migrated from', currentRole, 'to', role);
+      return res.json({ message: 'Role user berhasil diubah' });
+    }
+
+    // If role is not changing, just update the data
+    console.log('📝 [Admin] Updating user data without role change');
 
     if (role === 'admin') {
       if (hashedPassword) {
@@ -333,9 +442,10 @@ export const updateUser = async (req, res) => {
       }
     }
 
+    console.log('✅ [Admin] User data updated successfully');
     res.json({ message: 'Data user telah diperbarui' });
   } catch (error) {
-    console.error('Update user error:', error);
+    console.error('❌ [Admin] Update user error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan, silakan coba lagi' });
   }
 };
