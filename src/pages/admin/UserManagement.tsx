@@ -66,18 +66,35 @@ export default function UserManagement() {
     e.preventDefault();
     try {
       if (editingUser) {
-        await api.updateUser(editingUser.id, {
+        console.log('🔄 Updating user role:', {
+          id: editingUser.id,
+          oldRole: editingUser.role,
+          newRole: formData.role
+        });
+
+        const response = await api.updateUser(editingUser.id, {
           role: formData.role,
           old_role: editingUser.role, // Send the old role to backend
           email: editingUser.email,
           full_name: editingUser.full_name
         });
+
+        console.log('✅ Update response:', response);
         toast.success('Role user berhasil diperbarui');
+
+        setDialogOpen(false);
+        resetForm();
+
+        // Reset filter to 'all' to ensure we can see the user in their new role
+        console.log('🔄 Resetting filter to "all" and reloading users...');
+        setFilterRole('all');
+
+        // Wait a bit for state to update, then reload
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await loadUsers();
       }
-      setDialogOpen(false);
-      resetForm();
-      loadUsers();
     } catch (error: any) {
+      console.error('❌ Update error:', error);
       toast.error(error.message || 'Operasi gagal');
     }
   };
