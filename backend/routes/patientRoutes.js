@@ -30,6 +30,6 @@ router.get('/queue/:appointment_id', getQueueStatus);
 router.post('/consultations', authorizeRole('pasien', 'admin'), createConsultation);
 router.get('/consultations', getMyConsultations);
 router.post('/consultations/messages', sendConsultationMessage);
-router.get('/consultations/:consultation_id/messages', getConsultationMessages);
+router.get('/consultations/:doctor_id/messages', getConsultationMessages);
 
 export default router;
