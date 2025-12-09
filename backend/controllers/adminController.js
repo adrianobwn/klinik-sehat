@@ -8,8 +8,9 @@ import { validatePhone, validateNIK, validatePassword } from '../utils/validatio
 
 export const getTodayQueue = async (req, res) => {
   try {
-    // Use CURDATE() from MySQL to get current date in server timezone
-    console.log('🔍 [Admin] Getting today queue...');
+    // Accept optional date parameter from client, fallback to server CURDATE()
+    const { date } = req.query;
+    console.log('🔍 [Admin] Getting queue for date:', date || 'CURDATE()');
 
     // Debug: Check all queue dates
     const [allQueues] = await pool.query(
@@ -21,41 +22,76 @@ export const getTodayQueue = async (req, res) => {
     const [dateCheck] = await pool.query('SELECT CURDATE() as today, NOW() as now');
     console.log('📅 [Admin] Database current date:', dateCheck[0]);
 
-    const [queue] = await pool.query(
-      `SELECT 
-        na.id_antrian as id,
-        na.nomor_antrian as queue_number,
-        na.NIK_pasien,
-        na.nama_pasien as patient_name,
-        na.tanggal_antrian as queue_date,
-        na.waktu_mulai as start_time,
-        na.waktu_selesai as end_time,
-        na.status_antrian,
-        CASE 
-          WHEN na.status_antrian = 'Menunggu' THEN 'waiting'
-          WHEN na.status_antrian = 'Dipanggil' THEN 'in_progress'
-          WHEN na.status_antrian = 'Sedang Dilayani' THEN 'in_progress'
-          WHEN na.status_antrian = 'Selesai' THEN 'completed'
-          WHEN na.status_antrian = 'Batal' THEN 'skipped'
-          ELSE 'waiting'
-        END as status,
-        na.prioritas,
-        d.nama_dokter as doctor_name,
-        d.spesialisasi,
-        po.keluhan_pasien as complaint,
-        po.waktu_daftar as appointment_time
-       FROM nomor_antrian na
-       LEFT JOIN dokter d ON na.id_dokter = d.id_dokter
-       LEFT JOIN pendaftaran_online po ON na.id_pendaftaran = po.id_pendaftaran
-       WHERE DATE(na.tanggal_antrian) = CURDATE()
-       ORDER BY na.prioritas DESC, na.nomor_antrian ASC`
-    );
+    // Use provided date or CURDATE()
+    let queue;
+    if (date) {
+      [queue] = await pool.query(
+        `SELECT 
+          na.id_antrian as id,
+          na.nomor_antrian as queue_number,
+          na.NIK_pasien,
+          na.nama_pasien as patient_name,
+          na.tanggal_antrian as queue_date,
+          na.waktu_mulai as start_time,
+          na.waktu_selesai as end_time,
+          na.status_antrian,
+          CASE 
+            WHEN na.status_antrian = 'Menunggu' THEN 'waiting'
+            WHEN na.status_antrian = 'Dipanggil' THEN 'in_progress'
+            WHEN na.status_antrian = 'Sedang Dilayani' THEN 'in_progress'
+            WHEN na.status_antrian = 'Selesai' THEN 'completed'
+            WHEN na.status_antrian = 'Batal' THEN 'skipped'
+            ELSE 'waiting'
+          END as status,
+          na.prioritas,
+          d.nama_dokter as doctor_name,
+          d.spesialisasi,
+          po.keluhan_pasien as complaint,
+          po.waktu_daftar as appointment_time
+         FROM nomor_antrian na
+         LEFT JOIN dokter d ON na.id_dokter = d.id_dokter
+         LEFT JOIN pendaftaran_online po ON na.id_pendaftaran = po.id_pendaftaran
+         WHERE DATE(na.tanggal_antrian) = ?
+         ORDER BY na.prioritas DESC, na.nomor_antrian ASC`,
+        [date]
+      );
+    } else {
+      [queue] = await pool.query(
+        `SELECT 
+          na.id_antrian as id,
+          na.nomor_antrian as queue_number,
+          na.NIK_pasien,
+          na.nama_pasien as patient_name,
+          na.tanggal_antrian as queue_date,
+          na.waktu_mulai as start_time,
+          na.waktu_selesai as end_time,
+          na.status_antrian,
+          CASE 
+            WHEN na.status_antrian = 'Menunggu' THEN 'waiting'
+            WHEN na.status_antrian = 'Dipanggil' THEN 'in_progress'
+            WHEN na.status_antrian = 'Sedang Dilayani' THEN 'in_progress'
+            WHEN na.status_antrian = 'Selesai' THEN 'completed'
+            WHEN na.status_antrian = 'Batal' THEN 'skipped'
+            ELSE 'waiting'
+          END as status,
+          na.prioritas,
+          d.nama_dokter as doctor_name,
+          d.spesialisasi,
+          po.keluhan_pasien as complaint,
+          po.waktu_daftar as appointment_time
+         FROM nomor_antrian na
+         LEFT JOIN dokter d ON na.id_dokter = d.id_dokter
+         LEFT JOIN pendaftaran_online po ON na.id_pendaftaran = po.id_pendaftaran
+         WHERE DATE(na.tanggal_antrian) = CURDATE()
+         ORDER BY na.prioritas DESC, na.nomor_antrian ASC`
+      );
+    }
 
     console.log('📊 [Admin] Found', queue.length, 'queue items');
     if (queue.length > 0) {
       console.log('📝 [Admin] First queue item:', queue[0]);
     } else {
-      console.log('⚠️ [Admin] No queue items found today.');
+      console.log('⚠️ [Admin] No queue items found for this date.');
       // Try to get any recent queue
       const [recentQueue] = await pool.query(
         `SELECT tanggal_antrian, COUNT(*) as count 

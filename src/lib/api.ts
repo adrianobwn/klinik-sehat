@@ -226,7 +226,9 @@ class ApiService {
 
   // Admin - Queue
   async getTodayQueue() {
-    return this.request('/admin/queue/today');
+    // Send client's local date to handle timezone differences
+    const today = new Date().toISOString().split('T')[0];
+    return this.request(`/admin/queue/today?date=${today}`);
   }
 
   async callQueue(queueId: number) {
