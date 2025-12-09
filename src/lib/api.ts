@@ -96,11 +96,11 @@ class ApiService {
   }
 
   // Doctor - Schedules
-  async getDoctorSchedules(doctorId?: number) {
+  async getDoctorSchedules(doctorId?: number): Promise<{ schedules: any[] }> {
     const endpoint = doctorId
       ? `/doctor/schedules/${doctorId}`
       : '/doctor/schedules';
-    return this.request(endpoint);
+    return this.request<{ schedules: any[] }>(endpoint);
   }
 
   async createSchedule(scheduleData: any) {
