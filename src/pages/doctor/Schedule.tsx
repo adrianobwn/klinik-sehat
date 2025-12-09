@@ -56,11 +56,11 @@ export default function Schedule() {
         const timeStr = s.start_time && s.end_time ? `${s.start_time}-${s.end_time}` : s.time;
         currentSchedules[s.day_of_week.toLowerCase()] = timeStr;
       });
-      
+
       // Add new/edited schedule
       const timeStr = `${formData.start_time}-${formData.end_time}`;
       currentSchedules[formData.day_of_week.toLowerCase()] = timeStr;
-      
+
       await api.createSchedule({ schedules: currentSchedules });
       toast.success('Jadwal berhasil diperbarui');
       setDialogOpen(false);
@@ -98,7 +98,7 @@ export default function Schedule() {
           currentSchedules[s.day_of_week.toLowerCase()] = timeStr;
         }
       });
-      
+
       await api.createSchedule({ schedules: currentSchedules });
       toast.success('Jadwal berhasil dihapus');
       loadSchedules();
@@ -278,7 +278,7 @@ export default function Schedule() {
                             <Button
                               size="sm"
                               variant="destructive"
-                              onClick={() => handleDelete(schedule.id)}
+                              onClick={() => handleDelete(schedule)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
