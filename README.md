@@ -2,6 +2,131 @@
 
 Aplikasi web untuk manajemen klinik kesehatan dengan fitur pendaftaran online, antrian pasien, konsultasi online, dan rekam medis.
 
+---
+
+## ⚡ PANDUAN CEPAT UNTUK PRESENTASI (BACA INI DULU!)
+
+### 🎯 Langkah 1: Persiapan Awal
+
+**Yang Dibutuhkan:**
+1. **Node.js** - Download dari https://nodejs.org (pilih versi LTS)
+2. **XAMPP** - Download dari https://www.apachefriends.org (untuk MySQL database)
+3. **Visual Studio Code** - Download dari https://code.visualstudio.com (untuk menjalankan terminal)
+
+### 🎯 Langkah 2: Setup Database (Sekali Saja)
+
+1. **Buka XAMPP Control Panel** dan START:
+   - Apache
+   - MySQL
+
+2. **Buka browser**, pergi ke: `http://localhost/phpmyadmin`
+
+3. **Buat database baru:**
+   - Klik "New" di sidebar kiri
+   - Ketik nama database: `klinik_sehat`
+   - Klik "Create"
+
+4. **Import data:**
+   - Klik database `klinik_sehat` di sidebar
+   - Klik tab "Import" di atas
+   - Klik "Choose File" dan pilih file: `backend/migrations/create_tables_only.sql`
+   - Scroll ke bawah, klik "Import"
+   - Tunggu sampai muncul pesan sukses ✅
+
+### 🎯 Langkah 3: Jalankan Aplikasi
+
+**Buka 2 Terminal di VS Code (Terminal → New Terminal):**
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm install
+node server.js
+```
+Tunggu sampai muncul: `Server running on port 5001`
+
+**Terminal 2 - Frontend:**
+```bash
+npm install
+npm run dev
+```
+Tunggu sampai muncul URL seperti: `http://localhost:5173`
+
+### 🎯 Langkah 4: Buka Aplikasi
+
+Buka browser dan pergi ke: **http://localhost:5173**
+
+---
+
+## 🔑 AKUN DEMO UNTUK PRESENTASI
+
+### Admin (Kelola Antrian & User)
+- **Email:** `admin@kliniksehat.com`
+- **Password:** `admin123`
+
+### Dokter (Lihat Jadwal & Pasien)
+- **Email:** `dokter@kliniksehat.com`
+- **Password:** `dokter123`
+
+### Pasien (Daftar & Konsultasi)
+- **Email:** `pasien@kliniksehat.com`
+- **Password:** `admin123`
+
+---
+
+## 📋 SKENARIO DEMO PRESENTASI
+
+### Demo 1: Alur Pendaftaran Pasien
+1. Login sebagai **Pasien** (`pasien@kliniksehat.com` / `admin123`)
+2. Klik menu **"Pendaftaran Online"**
+3. Pilih dokter, tanggal, dan slot waktu
+4. Isi keluhan, klik **"Daftar Sekarang"**
+5. Tunjukkan nomor antrian yang muncul ✅
+
+### Demo 2: Kelola Antrian (Admin)
+1. Logout, lalu login sebagai **Admin** (`admin@kliniksehat.com` / `admin123`)
+2. Klik menu **"Kelola Antrian"**
+3. Tunjukkan pasien yang menunggu
+4. Klik **"Panggil"** untuk memanggil pasien
+5. Klik **"Selesai"** setelah dilayani ✅
+
+### Demo 3: Jadwal Dokter
+1. Login sebagai **Dokter** (`dokter@kliniksehat.com` / `dokter123`)
+2. Klik menu **"Jadwal Praktik"**
+3. Tunjukkan jadwal yang ada
+4. Tambah jadwal baru dengan klik **"Tambah Jadwal"** ✅
+
+### Demo 4: Konsultasi Online
+1. Login sebagai **Pasien**
+2. Klik menu **"Konsultasi Online"**
+3. Kirim pesan ke dokter
+4. Login sebagai **Dokter** di browser lain (atau incognito)
+5. Balas pesan di menu **"Konsultasi"** ✅
+
+---
+
+## ❓ TROUBLESHOOTING (Jika Ada Masalah)
+
+### "Cannot connect to database"
+- Pastikan XAMPP sudah jalan (MySQL harus hijau)
+- Cek file `backend/.env` sudah benar
+
+### "npm not found"
+- Install Node.js dari https://nodejs.org
+- Restart terminal/VS Code setelah install
+
+### Halaman kosong/blank
+- Buka Developer Tools (F12)
+- Lihat tab Console untuk error
+- Biasanya perlu restart backend (`Ctrl+C` lalu `node server.js`)
+
+### Login gagal / "Tidak memiliki akses"
+1. Buka browser → F12 → Application → Local Storage
+2. Hapus item "token"
+3. Refresh halaman dan login ulang
+
+---
+
 ## 🚀 Fitur Utama
 
 ### Admin
@@ -47,11 +172,11 @@ Aplikasi web untuk manajemen klinik kesehatan dengan fitur pendaftaran online, a
 - MySQL (v8 atau lebih baru)
 - npm atau yarn
 
-## 🔧 Instalasi
+## 🔧 Instalasi Lengkap
 
 ### 1. Clone Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/adrianobwn/klinik-sehat
 cd klinik-sehat
 ```
 
@@ -67,9 +192,9 @@ Buat file `.env` di folder `backend`:
 PORT=5001
 DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=your_password
+DB_PASSWORD=
 DB_NAME=klinik_sehat
-JWT_SECRET=your_jwt_secret_key_here
+JWT_SECRET=kliniksehat_secret_key_2024
 ```
 
 ### 3. Setup Database
@@ -81,8 +206,8 @@ mysql -u root -p
 # Buat database
 CREATE DATABASE klinik_sehat;
 
-# Import schema (jika ada file SQL)
-mysql -u root -p klinik_sehat < database/schema.sql
+# Import schema
+mysql -u root -p klinik_sehat < backend/migrations/create_tables_only.sql
 ```
 
 ### 4. Setup Frontend
@@ -124,24 +249,6 @@ npm run build
 # Preview build
 npm run preview
 ```
-
-## 👥 Default User Credentials
-
-Setelah setup database, Anda dapat login dengan:
-
-**Admin:**
-- Email: admin@kliniksehat.com
-- Password: admin123
-
-**Dokter:**
-- Email: dokter@kliniksehat.com
-- Password: dokter123
-
-**Pasien:**
-- Email: pasien@kliniksehat.com
-- Password: pasien123
-
-> **Note**: Ganti password default setelah login pertama kali di production.
 
 ## 📁 Struktur Project
 
@@ -208,22 +315,11 @@ klinik-sehat/
 - Validasi hari dan waktu praktik dokter
 - Pasien hanya bisa booking sesuai jadwal dokter
 
-## 🤝 Contributing
-
-1. Fork repository
-2. Buat branch baru (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
 ## 📄 License
 
 This project is licensed under the MIT License.
 
-## 📧 Contact
-
-Untuk pertanyaan atau dukungan, hubungi: support@kliniksehat.com
-
 ---
 
 Made with ❤️ for better healthcare management
+

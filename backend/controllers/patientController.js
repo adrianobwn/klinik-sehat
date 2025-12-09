@@ -57,9 +57,9 @@ export const getDoctorSchedules = async (req, res) => {
       schedules = {};
     }
 
-    res.json({ 
+    res.json({
       doctor: dokter[0],
-      schedules 
+      schedules
     });
   } catch (error) {
     console.error('Get doctor schedules error:', error);
@@ -73,7 +73,7 @@ export const getDoctorSchedules = async (req, res) => {
 
 export const createAppointment = async (req, res) => {
   const connection = await pool.getConnection();
-  
+
   try {
     await connection.beginTransaction();
 
@@ -154,18 +154,18 @@ export const createAppointment = async (req, res) => {
     // Check time slot
     const scheduleTime = schedules[scheduleKey]; // e.g., "08:00-14:00"
     const [startTime, endTime] = scheduleTime.split('-');
-    
+
     // Validate appointment_time is within schedule
     if (appointment_time < startTime || appointment_time > endTime) {
       await connection.rollback();
-      return res.status(400).json({ 
-        message: `Waktu yang dipilih di luar jadwal praktik. Jadwal dokter: ${startTime} - ${endTime}` 
+      return res.status(400).json({
+        message: `Waktu yang dipilih di luar jadwal praktik. Jadwal dokter: ${startTime} - ${endTime}`
       });
     }
 
     // Check current capacity for this time slot (1 hour window)
     const timeSlotEnd = String(parseInt(appointment_time.split(':')[0]) + 1).padStart(2, '0') + ':00';
-    
+
     const [currentBookings] = await connection.query(
       `SELECT COUNT(*) as count 
        FROM pendaftaran_online po
@@ -182,8 +182,8 @@ export const createAppointment = async (req, res) => {
 
     if (currentCount >= maxPatients) {
       await connection.rollback();
-      return res.status(400).json({ 
-        message: `Maaf, slot waktu ${appointment_time} sudah penuh (${currentCount}/${maxPatients} pasien). Silakan pilih waktu lain.` 
+      return res.status(400).json({
+        message: `Maaf, slot waktu ${appointment_time} sudah penuh (${currentCount}/${maxPatients} pasien). Silakan pilih waktu lain.`
       });
     }
 
@@ -206,18 +206,20 @@ export const createAppointment = async (req, res) => {
     const queueNumber = queueCount[0].next_number;
 
     // Create queue
-    await connection.query(
+    const [queueResult] = await connection.query(
       `INSERT INTO nomor_antrian 
        (nomor_antrian, id_pendaftaran, NIK_pasien, nama_pasien, id_dokter, tanggal_antrian, status_antrian, prioritas)
        VALUES (?, ?, ?, ?, ?, ?, 'Menunggu', 'Normal')`,
       [queueNumber, appointmentId, patientNik, patientName, doctor_id, appointment_date]
     );
 
-    // Create notification
+    const queueId = queueResult.insertId;
+
+    // Create notification with queue ID
     await connection.query(
-      `INSERT INTO notifikasi (NIK_pasien, judul_notifikasi, isi_notifikasi, jenis_notifikasi, status_antrian)
-       VALUES (?, 'Pendaftaran Berhasil', ?, 'Pendaftaran', 'Menunggu')`,
-      [patientNik, `Nomor antrian Anda: ${queueNumber}. Tanggal: ${appointment_date}, Waktu: ${appointment_time}`]
+      `INSERT INTO notifikasi (id_antrian, NIK_pasien, judul_notifikasi, isi_notifikasi, jenis_notifikasi, status_antrian)
+       VALUES (?, ?, 'Pendaftaran Berhasil', ?, 'Pendaftaran', 'Menunggu')`,
+      [queueId, patientNik, `Nomor antrian Anda: ${queueNumber}. Tanggal: ${appointment_date}, Waktu: ${appointment_time}`]
     );
 
     await connection.commit();
@@ -494,7 +496,7 @@ export const getAvailableTimeSlots = async (req, res) => {
 
     let schedules = {};
     const maxPatients = 20; // default per slot
-    
+
     try {
       schedules = doctor[0].jadwal_praktik ? JSON.parse(doctor[0].jadwal_praktik) : {};
     } catch (e) {
@@ -516,9 +518,9 @@ export const getAvailableTimeSlots = async (req, res) => {
     const scheduleKey = dayMap[appointmentDay];
 
     if (!schedules[scheduleKey]) {
-      return res.json({ 
+      return res.json({
         slots: [],
-        message: `Dokter tidak praktik di hari ${appointmentDay}` 
+        message: `Dokter tidak praktik di hari ${appointmentDay}`
       });
     }
 
@@ -561,7 +563,7 @@ export const getAvailableTimeSlots = async (req, res) => {
 
     console.log('✅ [TimeSlots] Generated', slots.length, 'slots');
 
-    res.json({ 
+    res.json({
       slots,
       scheduleTime: `${startTime} - ${endTime}`,
       day: appointmentDay
