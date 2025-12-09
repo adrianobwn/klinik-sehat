@@ -27,6 +27,17 @@ class ApiService {
     const data = await response.json();
 
     if (!response.ok) {
+      // Handle token expired or unauthorized - clear token and redirect
+      if (response.status === 401 || response.status === 403) {
+        // Only clear and redirect for non-login endpoints
+        if (!endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+          localStorage.removeItem('token');
+          // Redirect to login page if not already there
+          if (window.location.pathname !== '/auth') {
+            window.location.href = '/auth';
+          }
+        }
+      }
       throw new Error(data.message || 'Something went wrong');
     }
 
@@ -40,22 +51,22 @@ class ApiService {
     full_name: string;
     role?: string;
     phone?: string;
-  }) {
-    return this.request('/auth/register', {
+  }): Promise<{ token: string; user: any; message: string }> {
+    return this.request<{ token: string; user: any; message: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
-  async login(email: string, password: string) {
-    return this.request('/auth/login', {
+  async login(email: string, password: string): Promise<{ token: string; user: any; message: string }> {
+    return this.request<{ token: string; user: any; message: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   }
 
-  async getProfile() {
-    return this.request('/auth/profile');
+  async getProfile(): Promise<{ user: any }> {
+    return this.request<{ user: any }>('/auth/profile');
   }
 
   async updateProfile(profileData: {

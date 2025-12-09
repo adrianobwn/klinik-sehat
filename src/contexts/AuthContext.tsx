@@ -36,10 +36,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (token) {
       try {
         const response = await api.getProfile();
-        setUser(response.user);
+        if (response.user) {
+          setUser(response.user);
+        } else {
+          // No user data returned, clear token
+          localStorage.removeItem('token');
+          setUser(null);
+        }
       } catch (error) {
+        // Token invalid or expired, clean up
         localStorage.removeItem('token');
+        setUser(null);
       }
+    } else {
+      setUser(null);
     }
     setLoading(false);
   };
